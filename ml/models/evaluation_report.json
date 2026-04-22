@@ -1,0 +1,57 @@
+{
+  "config": {
+    "csv_path": "C:\\Users\\Minh Kha\\OneDrive - ctu.edu.vn\\Downloads\\luanvan\\ml\\amazon_uk_shoes_products_dataset_2021_12.csv",
+    "topk": 10,
+    "random_state": 42,
+    "users_eval": 255,
+    "products_eval": 736,
+    "train_events": 2294
+  },
+  "metrics": {
+    "cf_only": {
+      "users_evaluated": 255.0,
+      "precision_at_k": 0.0003921568627450981,
+      "recall_at_k": 0.00392156862745098,
+      "hit_rate_at_k": 0.00392156862745098,
+      "ndcg_at_k": 0.0011805097869175734,
+      "map_at_k": 0.00043572984749455336,
+      "coverage_at_k": 0.49184782608695654
+    },
+    "cbf_only": {
+      "users_evaluated": 255.0,
+      "precision_at_k": 0.0035294117647058825,
+      "recall_at_k": 0.03529411764705882,
+      "hit_rate_at_k": 0.03529411764705882,
+      "ndcg_at_k": 0.019583656078619543,
+      "map_at_k": 0.01485838779956427,
+      "coverage_at_k": 0.8084239130434783
+    },
+    "hybrid_70cf_30cbf": {
+      "users_evaluated": 255.0,
+      "precision_at_k": 0.0011764705882352942,
+      "recall_at_k": 0.011764705882352941,
+      "hit_rate_at_k": 0.011764705882352941,
+      "ndcg_at_k": 0.005298493702507186,
+      "map_at_k": 0.0033053221288515404,
+      "coverage_at_k": 0.8125
+    },
+    "hybrid_30cf_70cbf": {
+      "users_evaluated": 255.0,
+      "precision_at_k": 0.0031372549019607846,
+      "recall_at_k": 0.03137254901960784,
+      "hit_rate_at_k": 0.03137254901960784,
+      "ndcg_at_k": 0.01757947066931889,
+      "map_at_k": 0.0134640522875817,
+      "coverage_at_k": 0.8301630434782609
+    },
+    "hybrid_50_50": {
+      "users_evaluated": 255.0,
+      "precision_at_k": 0.0027450980392156863,
+      "recall_at_k": 0.027450980392156862,
+      "hit_rate_at_k": 0.027450980392156862,
+      "ndcg_at_k": 0.015158659427426608,
+      "map_at_k": 0.011540616246498598,
+      "coverage_at_k": 0.8383152173913043
+    }
+  }
+}

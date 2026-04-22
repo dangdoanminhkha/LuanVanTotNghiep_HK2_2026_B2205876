@@ -1,0 +1,925 @@
+{
+  "eval_type": "random_sample",
+  "total_gallery_size": 12069,
+  "total_queries": 500,
+  "total_hits": 309,
+  "hit_rate": 0.618,
+  "precision_at_k": 0.13840000000000022,
+  "mrr": 0.3987904761904759,
+  "map": 0.08983706349206357,
+  "top_k": 10,
+  "results_per_label": {
+    "Heels_Nine West": {
+      "hits": 19,
+      "total": 23
+    },
+    "Clogs and Mules_Klogs USA": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_L.A.M.B": {
+      "hits": 1,
+      "total": 2
+    },
+    "Clogs and Mules_Alegria": {
+      "hits": 5,
+      "total": 5
+    },
+    "Heels_MICHAEL Michael Kors": {
+      "hits": 0,
+      "total": 5
+    },
+    "Flats_Elephantito": {
+      "hits": 2,
+      "total": 3
+    },
+    "Loafers_Born": {
+      "hits": 2,
+      "total": 2
+    },
+    "Flats_Sofft": {
+      "hits": 0,
+      "total": 2
+    },
+    "Flats_Naturino": {
+      "hits": 2,
+      "total": 3
+    },
+    "Firstwalker_Kid Express": {
+      "hits": 1,
+      "total": 1
+    },
+    "Firstwalker_Tsukihoshi Kids": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Jambu": {
+      "hits": 2,
+      "total": 3
+    },
+    "Heels_Bella-Vita": {
+      "hits": 1,
+      "total": 3
+    },
+    "Loafers_Pikolinos": {
+      "hits": 2,
+      "total": 4
+    },
+    "Heels_rsvp": {
+      "hits": 8,
+      "total": 9
+    },
+    "Heels_Miz Mooz": {
+      "hits": 2,
+      "total": 3
+    },
+    "Heels_Naot Footwear": {
+      "hits": 3,
+      "total": 4
+    },
+    "Heels_Stuart Weitzman": {
+      "hits": 9,
+      "total": 13
+    },
+    "Flats_BCBGeneration": {
+      "hits": 0,
+      "total": 2
+    },
+    "Loafers_Bostonian": {
+      "hits": 2,
+      "total": 2
+    },
+    "Flats_Patagonia": {
+      "hits": 0,
+      "total": 1
+    },
+    "Clogs and Mules_Orthaheel": {
+      "hits": 1,
+      "total": 2
+    },
+    "Boat Shoes_Sperry Top-Sider": {
+      "hits": 7,
+      "total": 7
+    },
+    "Heels_Tsubo": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Anne Klein": {
+      "hits": 7,
+      "total": 9
+    },
+    "Heels_Betsey Johnson": {
+      "hits": 1,
+      "total": 5
+    },
+    "Heels_Vidorreta": {
+      "hits": 1,
+      "total": 1
+    },
+    "Loafers_Frye": {
+      "hits": 2,
+      "total": 2
+    },
+    "Flats_pediped": {
+      "hits": 0,
+      "total": 1
+    },
+    "Flats_Keds Kids": {
+      "hits": 1,
+      "total": 1
+    },
+    "Clogs and Mules_SKECHERS": {
+      "hits": 2,
+      "total": 2
+    },
+    "Firstwalker_See Kai Run Kids": {
+      "hits": 1,
+      "total": 1
+    },
+    "Flats_Frye": {
+      "hits": 3,
+      "total": 4
+    },
+    "Heels_Taryn Rose": {
+      "hits": 1,
+      "total": 2
+    },
+    "Clogs and Mules_Nurse Mates": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Franco Sarto": {
+      "hits": 3,
+      "total": 5
+    },
+    "Loafers_Hush Puppies Kids": {
+      "hits": 0,
+      "total": 1
+    },
+    "Loafers_Hush Puppies": {
+      "hits": 1,
+      "total": 2
+    },
+    "Clogs and Mules_Haflinger": {
+      "hits": 2,
+      "total": 2
+    },
+    "Flats_Steve Madden": {
+      "hits": 0,
+      "total": 2
+    },
+    "Heels_Rachel Roy": {
+      "hits": 0,
+      "total": 2
+    },
+    "Heels_J. Renee": {
+      "hits": 3,
+      "total": 5
+    },
+    "Flats_Drew": {
+      "hits": 1,
+      "total": 2
+    },
+    "Flats_Kid Express": {
+      "hits": 2,
+      "total": 5
+    },
+    "Heels_Steve Madden": {
+      "hits": 1,
+      "total": 3
+    },
+    "Loafers_Patricia Green": {
+      "hits": 0,
+      "total": 2
+    },
+    "Flats_Anne Klein": {
+      "hits": 6,
+      "total": 7
+    },
+    "Clogs and Mules_Spring Step": {
+      "hits": 3,
+      "total": 3
+    },
+    "Heels_KORS Michael Kors": {
+      "hits": 1,
+      "total": 2
+    },
+    "Flats_Munro American": {
+      "hits": 0,
+      "total": 2
+    },
+    "Clogs and Mules_Merrell": {
+      "hits": 2,
+      "total": 2
+    },
+    "Loafers_BOSS Black": {
+      "hits": 2,
+      "total": 2
+    },
+    "Heels_Diane Von Furstenberg": {
+      "hits": 0,
+      "total": 3
+    },
+    "Heels_ALDO": {
+      "hits": 2,
+      "total": 6
+    },
+    "Flats_Geox": {
+      "hits": 2,
+      "total": 2
+    },
+    "Clogs and Mules_Naot Footwear": {
+      "hits": 0,
+      "total": 2
+    },
+    "Loafers_NO SOX": {
+      "hits": 2,
+      "total": 2
+    },
+    "Loafers_Cole Haan": {
+      "hits": 4,
+      "total": 5
+    },
+    "Clogs and Mules_Alegria Kids": {
+      "hits": 1,
+      "total": 1
+    },
+    "Flats_Lucky Brand": {
+      "hits": 3,
+      "total": 3
+    },
+    "Heels_David Tate": {
+      "hits": 1,
+      "total": 1
+    },
+    "Flats_SKECHERS KIDS": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Bouquets": {
+      "hits": 2,
+      "total": 3
+    },
+    "Heels_Corso Como": {
+      "hits": 2,
+      "total": 4
+    },
+    "Heels_Geox": {
+      "hits": 0,
+      "total": 1
+    },
+    "Flats_Umi Kids": {
+      "hits": 0,
+      "total": 1
+    },
+    "Loafers_Florsheim": {
+      "hits": 2,
+      "total": 4
+    },
+    "Flats_French Sole": {
+      "hits": 2,
+      "total": 2
+    },
+    "Heels_Gabriella Rocha": {
+      "hits": 5,
+      "total": 9
+    },
+    "Flats_Clarks": {
+      "hits": 1,
+      "total": 1
+    },
+    "Flats_Venettini Kids": {
+      "hits": 1,
+      "total": 2
+    },
+    "Boat Shoes_Cole Haan": {
+      "hits": 0,
+      "total": 1
+    },
+    "Loafers_Munro American": {
+      "hits": 1,
+      "total": 1
+    },
+    "Loafers_Johnston & Murphy": {
+      "hits": 3,
+      "total": 4
+    },
+    "Flats_Jumping Jacks Kids": {
+      "hits": 3,
+      "total": 3
+    },
+    "Heels_Bottega Veneta": {
+      "hits": 0,
+      "total": 1
+    },
+    "Heels_Michael Antonio": {
+      "hits": 1,
+      "total": 2
+    },
+    "Flats_Madden Girl": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Frye": {
+      "hits": 2,
+      "total": 2
+    },
+    "Flats_Propet": {
+      "hits": 0,
+      "total": 1
+    },
+    "Flats_Beeko": {
+      "hits": 1,
+      "total": 1
+    },
+    "Flats_Primigi Kids": {
+      "hits": 2,
+      "total": 3
+    },
+    "Firstwalker_Stride Rite": {
+      "hits": 3,
+      "total": 3
+    },
+    "Loafers_Primigi Kids": {
+      "hits": 3,
+      "total": 3
+    },
+    "Heels_LAUREN Ralph Lauren": {
+      "hits": 2,
+      "total": 3
+    },
+    "Heels_Earthies": {
+      "hits": 3,
+      "total": 4
+    },
+    "Heels_Bandolino": {
+      "hits": 0,
+      "total": 1
+    },
+    "Heels_Romika": {
+      "hits": 0,
+      "total": 1
+    },
+    "Heels_Rockport": {
+      "hits": 1,
+      "total": 1
+    },
+    "Flats_See Kai Run Kids": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Clarks": {
+      "hits": 1,
+      "total": 2
+    },
+    "Heels_Cole Haan": {
+      "hits": 4,
+      "total": 5
+    },
+    "Flats_Rachel Zoe": {
+      "hits": 0,
+      "total": 1
+    },
+    "Heels_Caparros": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Rachel Kids": {
+      "hits": 0,
+      "total": 1
+    },
+    "Flats_Nina Kids": {
+      "hits": 1,
+      "total": 2
+    },
+    "Clogs and Mules_Dansko": {
+      "hits": 1,
+      "total": 3
+    },
+    "Heels_L.A.M.B%2E": {
+      "hits": 1,
+      "total": 2
+    },
+    "Heels_Fergie": {
+      "hits": 0,
+      "total": 1
+    },
+    "Flats_Stride Rite": {
+      "hits": 4,
+      "total": 5
+    },
+    "Flats_MICHAEL Michael Kors": {
+      "hits": 1,
+      "total": 3
+    },
+    "Flats_Garvalin Kids": {
+      "hits": 0,
+      "total": 1
+    },
+    "Flats_Corso Como": {
+      "hits": 0,
+      "total": 1
+    },
+    "Loafers_Dansko": {
+      "hits": 1,
+      "total": 2
+    },
+    "Flats_Ahnu": {
+      "hits": 1,
+      "total": 3
+    },
+    "Loafers_Call it SPRING": {
+      "hits": 1,
+      "total": 1
+    },
+    "Clogs and Mules_Crocs Kids": {
+      "hits": 3,
+      "total": 3
+    },
+    "Heels_Nina": {
+      "hits": 2,
+      "total": 3
+    },
+    "Loafers_Kenneth Cole Reaction": {
+      "hits": 0,
+      "total": 1
+    },
+    "Flats_Me Too Kids": {
+      "hits": 2,
+      "total": 2
+    },
+    "Flats_Livie & Luca": {
+      "hits": 1,
+      "total": 1
+    },
+    "Flats_Penny Loves Kenny": {
+      "hits": 0,
+      "total": 1
+    },
+    "Heels_Paris Hilton": {
+      "hits": 0,
+      "total": 1
+    },
+    "Clogs and Mules_El Naturalista": {
+      "hits": 1,
+      "total": 1
+    },
+    "Clogs and Mules_Birkenstock": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Salvatore Ferragamo": {
+      "hits": 2,
+      "total": 3
+    },
+    "Flats_Bloch Kids": {
+      "hits": 1,
+      "total": 2
+    },
+    "Loafers_Kenneth Cole New York": {
+      "hits": 2,
+      "total": 2
+    },
+    "Flats_Cienta Kids Shoes": {
+      "hits": 2,
+      "total": 2
+    },
+    "Flats_El Naturalista": {
+      "hits": 1,
+      "total": 2
+    },
+    "Heels_Jessica Simpson": {
+      "hits": 2,
+      "total": 3
+    },
+    "Loafers_Dunham": {
+      "hits": 0,
+      "total": 1
+    },
+    "Heels_Zigi": {
+      "hits": 0,
+      "total": 1
+    },
+    "Heels_Sam Edelman": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Lilly Pulitzer": {
+      "hits": 1,
+      "total": 2
+    },
+    "Heels_Pikolinos": {
+      "hits": 3,
+      "total": 3
+    },
+    "Heels_Badgley Mischka": {
+      "hits": 1,
+      "total": 2
+    },
+    "Loafers_Bass": {
+      "hits": 1,
+      "total": 1
+    },
+    "Loafers_Allen-Edmonds": {
+      "hits": 2,
+      "total": 2
+    },
+    "Heels_Stuart Weitzman Bridal & Evening Collection": {
+      "hits": 0,
+      "total": 1
+    },
+    "Flats_Pazitos": {
+      "hits": 2,
+      "total": 3
+    },
+    "Heels_Sofft": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Oh! Shoes": {
+      "hits": 1,
+      "total": 1
+    },
+    "Loafers_Clarks": {
+      "hits": 1,
+      "total": 1
+    },
+    "Flats_Rachel Kids": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Wolky": {
+      "hits": 3,
+      "total": 3
+    },
+    "Heels_Born": {
+      "hits": 1,
+      "total": 3
+    },
+    "Loafers_Merrell": {
+      "hits": 3,
+      "total": 4
+    },
+    "Heels_Ivanka Trump": {
+      "hits": 0,
+      "total": 3
+    },
+    "Flats_Stuart Weitzman": {
+      "hits": 1,
+      "total": 1
+    },
+    "Flats_Born": {
+      "hits": 0,
+      "total": 1
+    },
+    "Loafers_ECCO": {
+      "hits": 1,
+      "total": 2
+    },
+    "Flats_Jessica Simpson Kids": {
+      "hits": 0,
+      "total": 1
+    },
+    "Loafers_Keen": {
+      "hits": 0,
+      "total": 1
+    },
+    "Loafers_Naturalizer": {
+      "hits": 0,
+      "total": 1
+    },
+    "Flats_Jessica Simpson": {
+      "hits": 1,
+      "total": 4
+    },
+    "Flats_Morgan&Milo Kids": {
+      "hits": 1,
+      "total": 1
+    },
+    "Flats_Sam Edelman": {
+      "hits": 2,
+      "total": 2
+    },
+    "Clogs and Mules_Birki's": {
+      "hits": 1,
+      "total": 2
+    },
+    "Loafers_Eastland": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Rieker": {
+      "hits": 1,
+      "total": 3
+    },
+    "Flats_Cole Haan": {
+      "hits": 0,
+      "total": 2
+    },
+    "Flats_Arcopedico": {
+      "hits": 1,
+      "total": 1
+    },
+    "Firstwalker_Primigi Kids": {
+      "hits": 1,
+      "total": 1
+    },
+    "Flats_ara": {
+      "hits": 0,
+      "total": 2
+    },
+    "Heels_Gentle Souls": {
+      "hits": 1,
+      "total": 2
+    },
+    "Heels_Truth or Dare By Madonna": {
+      "hits": 1,
+      "total": 3
+    },
+    "Heels_Ted Baker": {
+      "hits": 1,
+      "total": 1
+    },
+    "Clogs and Mules_Crocs": {
+      "hits": 4,
+      "total": 6
+    },
+    "Boat Shoes_Sperry Kids": {
+      "hits": 2,
+      "total": 2
+    },
+    "Clogs and Mules_Sbicca": {
+      "hits": 1,
+      "total": 1
+    },
+    "Loafers_Anne Klein": {
+      "hits": 0,
+      "total": 1
+    },
+    "Heels_Annie": {
+      "hits": 1,
+      "total": 1
+    },
+    "Loafers_Merrell Kids": {
+      "hits": 1,
+      "total": 1
+    },
+    "Flats_Gabriella Rocha": {
+      "hits": 2,
+      "total": 2
+    },
+    "Heels_Giuseppe Zanotti": {
+      "hits": 1,
+      "total": 2
+    },
+    "Loafers_Donald J Pliner": {
+      "hits": 0,
+      "total": 3
+    },
+    "Heels_Calvin Klein": {
+      "hits": 2,
+      "total": 2
+    },
+    "Heels_Dansko": {
+      "hits": 0,
+      "total": 2
+    },
+    "Loafers_Geox": {
+      "hits": 0,
+      "total": 1
+    },
+    "Heels_Type Z": {
+      "hits": 1,
+      "total": 2
+    },
+    "Flats_Nine West": {
+      "hits": 3,
+      "total": 5
+    },
+    "Clogs and Mules_Walking Cradles": {
+      "hits": 0,
+      "total": 1
+    },
+    "Firstwalker_pediped": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Blowfish": {
+      "hits": 1,
+      "total": 1
+    },
+    "Clogs and Mules_MOZO": {
+      "hits": 1,
+      "total": 1
+    },
+    "Loafers_Minnetonka": {
+      "hits": 1,
+      "total": 1
+    },
+    "Clogs and Mules_Timberland PRO": {
+      "hits": 1,
+      "total": 2
+    },
+    "Boat Shoes_Native Kids Shoes": {
+      "hits": 1,
+      "total": 1
+    },
+    "Loafers_Polo Ralph Lauren": {
+      "hits": 0,
+      "total": 1
+    },
+    "Flats_FootMates": {
+      "hits": 0,
+      "total": 2
+    },
+    "Heels_Josef Seibel": {
+      "hits": 1,
+      "total": 1
+    },
+    "Clogs and Mules_Sanita": {
+      "hits": 0,
+      "total": 1
+    },
+    "Flats_Ros Hommerson": {
+      "hits": 0,
+      "total": 1
+    },
+    "Clogs and Mules_Easy Spirit": {
+      "hits": 0,
+      "total": 1
+    },
+    "Loafers_Mezlan": {
+      "hits": 2,
+      "total": 2
+    },
+    "Clogs and Mules_Josef Seibel": {
+      "hits": 2,
+      "total": 3
+    },
+    "Heels_Chinese Laundry": {
+      "hits": 0,
+      "total": 1
+    },
+    "Heels_Enzo Angiolini": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Naturalizer": {
+      "hits": 1,
+      "total": 1
+    },
+    "Flats_BC Footwear": {
+      "hits": 0,
+      "total": 2
+    },
+    "Heels_Calvin Klein Jeans": {
+      "hits": 0,
+      "total": 1
+    },
+    "Flats_Pikolinos": {
+      "hits": 1,
+      "total": 1
+    },
+    "Firstwalker_Umi Kids": {
+      "hits": 2,
+      "total": 3
+    },
+    "Heels_Vigotti": {
+      "hits": 1,
+      "total": 1
+    },
+    "Boat Shoes_Sebago": {
+      "hits": 2,
+      "total": 2
+    },
+    "Flats_Twig Kids": {
+      "hits": 0,
+      "total": 1
+    },
+    "Clogs and Mules_SoftWalk": {
+      "hits": 2,
+      "total": 2
+    },
+    "Heels_Sergio Rossi": {
+      "hits": 0,
+      "total": 2
+    },
+    "Heels_Seychelles": {
+      "hits": 0,
+      "total": 1
+    },
+    "Clogs and Mules_Born": {
+      "hits": 1,
+      "total": 1
+    },
+    "Loafers_Naot Footwear": {
+      "hits": 1,
+      "total": 2
+    },
+    "Flats_Dolce & Gabbana": {
+      "hits": 1,
+      "total": 1
+    },
+    "Flats_Fitzwell": {
+      "hits": 0,
+      "total": 1
+    },
+    "Heels_Circa Joan & David": {
+      "hits": 0,
+      "total": 1
+    },
+    "Clogs and Mules_Dansko Kids": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Not Rated": {
+      "hits": 0,
+      "total": 1
+    },
+    "Heels_Alexander McQueen": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_El Naturalista": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Fitzwell": {
+      "hits": 2,
+      "total": 2
+    },
+    "Flats_Camper Kids": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Trotters": {
+      "hits": 0,
+      "total": 1
+    },
+    "Firstwalker_Beeko": {
+      "hits": 1,
+      "total": 1
+    },
+    "Flats_Amiana": {
+      "hits": 0,
+      "total": 1
+    },
+    "Loafers_Finn Comfort": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Pelle Moda": {
+      "hits": 0,
+      "total": 1
+    },
+    "Heels_Lumiani": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Penny Loves Kenny": {
+      "hits": 1,
+      "total": 2
+    },
+    "Flats_Merrell": {
+      "hits": 1,
+      "total": 1
+    },
+    "Flats_MICHAEL Michael Kors Kids": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Kelsi Dagger": {
+      "hits": 0,
+      "total": 1
+    },
+    "Loafers_Nine West": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Kate Spade New York": {
+      "hits": 2,
+      "total": 2
+    },
+    "Heels_Betsey Johnson for The Cool People": {
+      "hits": 0,
+      "total": 1
+    },
+    "Heels_Donald J Pliner": {
+      "hits": 1,
+      "total": 1
+    },
+    "Heels_Madden Girl": {
+      "hits": 0,
+      "total": 1
+    },
+    "Heels_Stuart Weitzman for The Cool People": {
+      "hits": 0,
+      "total": 1
+    },
+    "Firstwalker_Agatha Ruiz De La Prada Kids": {
+      "hits": 1,
+      "total": 1
+    }
+  }
+}

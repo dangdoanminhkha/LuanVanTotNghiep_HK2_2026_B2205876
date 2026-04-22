@@ -1,0 +1,57 @@
+{
+  "title": "Amazon UK Shoes Reviews",
+  "subtitle": "Customer Sentiment and Feedback on Footwear Products",
+  "description": "This dataset contains customer reviews for various shoes on Amazon, including product names, review text, ratings, purchase verification, and helpfulness counts.",
+  "files": [
+    {
+      "name": "amazon_shoe_reviews.csv",
+      "description": "Amazon customer reviews for various shoe products."
+    }
+  ],
+  "columns": [
+    {
+      "name": "url",
+      "description": "The direct link to the product page on Amazon."
+    },
+    {
+      "name": "product_name",
+      "description": "The name and details of the shoe product being reviewed."
+    },
+    {
+      "name": "reviewer_name",
+      "description": "The name of the reviewer who left the review."
+    },
+    {
+      "name": "review_title",
+      "description": "A concise title summarizing the reviewer's experience or opinion of the product."
+    },
+    {
+      "name": "review_text",
+      "description": "The full review written by the reviewer, describing their experience with the product."
+    },
+    {
+      "name": "review_rating",
+      "description": "The star rating given by the reviewer, ranging from 1 (lowest) to 5 (highest)."
+    },
+    {
+      "name": "verified_purchase",
+      "description": "Indicates whether the review was left by a verified buyer (TRUE/FALSE)."
+    },
+    {
+      "name": "review_date",
+      "description": "The date on which the review was posted."
+    },
+    {
+      "name": "helpful_count",
+      "description": "The number of people who found the review helpful."
+    },
+    {
+      "name": "uniq_id",
+      "description": "A unique identifier for the review."
+    },
+    {
+      "name": "scraped_at",
+      "description": "The timestamp when the review was scraped from the website."
+    }
+  ]
+}
