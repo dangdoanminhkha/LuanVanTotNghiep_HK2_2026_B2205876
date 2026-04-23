@@ -28,3 +28,11 @@ Thumbs.db
 # Database
 *.sql.backup
 backup_*.sql
+
+# ML datasets and image-search test assets
+/ml/Shoes/
+/ml/amazon_uk_shoes_products_dataset_2021_12.csv
+/ml/amazon_uk_shoes_reviews-metadata.json
+/ml/__pycache__/
+/ml/models/*.pkl
+/ml/models/evaluation/*.pkl
