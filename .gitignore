@@ -36,3 +36,8 @@ backup_*.sql
 /ml/__pycache__/
 /ml/models/*.pkl
 /ml/models/evaluation/*.pkl
+/ml/models/evaluation/*.json
+/ml/models/evaluation_report.json
+
+# Uploaded media generated during app use
+/backend/uploads/
