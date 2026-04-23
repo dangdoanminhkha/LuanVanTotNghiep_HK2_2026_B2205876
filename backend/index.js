@@ -22,8 +22,8 @@ app.use(express.json());
 // Apply session ID middleware globally to extract guest session_id from headers
 app.use(extractSessionId);
 
-// Serve static files từ uploads folder
-app.use('/uploads', express.static('uploads'));
+// Serve static files từ uploads folder (absolute path to avoid cwd-dependent 404s)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/upload', require('./routes/upload'));

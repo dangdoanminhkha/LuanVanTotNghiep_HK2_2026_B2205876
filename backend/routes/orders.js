@@ -67,6 +67,15 @@ router.post('/', authenticateToken, async (req, res) => {
             return res.status(400).json({ message: 'Địa chỉ giao hàng phải được chọn từ danh sách đã lưu' });
         }
 
+        // Verify địa chỉ tồn tại và thuộc đúng user đang đặt đơn
+        const [addressRows] = await connection.query(
+            'SELECT id FROM user_addresses WHERE id = ? AND user_id = ? LIMIT 1',
+            [userAddressId, req.user.id]
+        );
+        if (!addressRows.length) {
+            return res.status(400).json({ message: 'Địa chỉ giao hàng không hợp lệ hoặc đã bị xóa' });
+        }
+
         // Preparatory insert - now only save user_address_id (no more snapshot columns)
         const columns = ['user_id', 'total', 'status', 'payment_method', 'note', 'user_address_id'];
         const placeholders = ['?', '?', '?', '?', '?', '?'];
@@ -127,8 +136,8 @@ router.post('/', authenticateToken, async (req, res) => {
             // Luôn trừ inventory để tránh race condition
             if (item.variant_id) {
                 const [updateResult] = await connection.query(
-                    'UPDATE product_variants SET stock = stock - ?, sold = sold + ? WHERE id = ? AND stock >= ?',
-                    [item.quantity, item.quantity, item.variant_id, item.quantity]
+                    'UPDATE product_variants SET sold = sold + ? WHERE id = ? AND (quantity - sold) >= ?',
+                    [item.quantity, item.variant_id, item.quantity]
                 );
 
                 if (updateResult.affectedRows === 0) {
@@ -250,8 +259,8 @@ router.put('/:id/cancel', authenticateToken, async (req, res) => {
         for (const item of items) {
             if (item.variant_id) {
                 await db.query(
-                    'UPDATE product_variants SET stock = stock + ?, sold = sold - ? WHERE id = ?',
-                    [item.quantity, item.quantity, item.variant_id]
+                    'UPDATE product_variants SET sold = sold - ? WHERE id = ?',
+                    [item.quantity, item.variant_id]
                 );
                 console.log(`Hoàn lại ${item.quantity} sản phẩm variant ${item.variant_id}`);
             }
@@ -299,7 +308,9 @@ router.get('/my-orders', authenticateToken, async (req, res) => {
                                         ) AS delivered_at,
                     ua.full_name AS recipient_name, ua.phone, ua.address_detail,
                     ua.province_name, ua.district_name, ua.ward_name,
-                    orr.return_reason, orr.return_evidence, orr.return_rejected_reason
+                          orr.return_reason, orr.return_evidence, orr.return_rejected_reason,
+                          orr.return_rejected_reason AS return_rejection_reason,
+                          orr.return_detailed
              FROM orders o 
              LEFT JOIN user_addresses ua ON o.user_address_id = ua.id
              LEFT JOIN order_returns orr ON o.id = orr.order_id
@@ -334,10 +345,12 @@ router.get('/', authenticateToken, isAdmin, async (req, res) => {
         // 1. COD hoặc Chuyển khoản (Xác lập ngay khi đặt)
         // 2. VNPay NHƯNG đã thanh toán thành công (payment_status = 'paid') hoặc đã hoàn tiền (payment_status = 'refunded')
         const [orders] = await db.query(
-            `SELECT o.*, u.email,
+            `SELECT o.*, u.email, u.full_name AS user_full_name,
                     ua.full_name AS recipient_name, ua.phone, ua.address_detail,
                     ua.province_name, ua.district_name, ua.ward_name,
-                    orr.return_reason, orr.return_evidence, orr.return_rejected_reason
+                          orr.return_reason, orr.return_evidence, orr.return_rejected_reason,
+                          orr.return_rejected_reason AS return_rejection_reason,
+                          orr.return_detailed
              FROM orders o 
              JOIN users u ON o.user_id = u.id 
              LEFT JOIN user_addresses ua ON o.user_address_id = ua.id
@@ -357,13 +370,26 @@ router.get('/', authenticateToken, isAdmin, async (req, res) => {
 router.get('/shipper', authenticateToken, isShipper, async (req, res) => {
     try {
         const [orders] = await db.query(
-            `SELECT o.*, u.email,
-                    ua.full_name AS recipient_name, ua.phone, ua.address_detail,
-                    ua.province_name, ua.district_name, ua.ward_name,
-                    orr.return_reason, orr.return_evidence, orr.return_rejected_reason
+            `SELECT o.*, u.email, u.full_name AS user_full_name,
+                                        COALESCE(ua.full_name, ua_fallback.full_name) AS recipient_name,
+                                        COALESCE(ua.phone, ua_fallback.phone) AS phone,
+                                        COALESCE(ua.address_detail, ua_fallback.address_detail) AS address_detail,
+                                        COALESCE(ua.province_name, ua_fallback.province_name) AS province_name,
+                                        COALESCE(ua.district_name, ua_fallback.district_name) AS district_name,
+                                        COALESCE(ua.ward_name, ua_fallback.ward_name) AS ward_name,
+                          orr.return_reason, orr.return_evidence, orr.return_rejected_reason,
+                          orr.return_rejected_reason AS return_rejection_reason,
+                          orr.return_detailed
              FROM orders o 
              JOIN users u ON o.user_id = u.id 
              LEFT JOIN user_addresses ua ON o.user_address_id = ua.id
+                         LEFT JOIN user_addresses ua_fallback ON ua_fallback.id = (
+                             SELECT uax.id
+                             FROM user_addresses uax
+                             WHERE uax.user_id = o.user_id
+                             ORDER BY uax.is_default DESC, uax.updated_at DESC, uax.id DESC
+                             LIMIT 1
+                         )
              LEFT JOIN order_returns orr ON o.id = orr.order_id
              WHERE o.status IN ('confirmed', 'shipping', 'delivered', 'failed_delivery_retry', 'failed_delivery', 'return', 'refund_pending', 'refund')
                AND (
@@ -492,6 +518,20 @@ router.put('/:id/status', authenticateToken, async (req, res) => {
             // Xây dựng câu UPDATE động dựa trên status
             const [currentOrder] = await db.query('SELECT status FROM orders WHERE id = ?', [orderId]);
             const oldStatus = currentOrder[0]?.status;
+
+            // Trạng thái này phải đi qua endpoint riêng để lưu chi tiết vận đơn hoàn trả
+            if (status === 'return_shipped') {
+                return res.status(400).json({
+                    error: 'Không thể cập nhật trực tiếp return_shipped. Vui lòng dùng API xác nhận gửi hàng hoàn từ phía khách hàng.'
+                });
+            }
+
+            // Chỉ cho phép xác nhận đã nhận hàng hoàn sau khi khách đã xác nhận gửi hàng
+            if (status === 'return_received' && oldStatus !== 'return_shipped') {
+                return res.status(400).json({
+                    error: 'Đơn hàng phải ở trạng thái return_shipped trước khi xác nhận đã nhận hàng hoàn.'
+                });
+            }
             
             let updateQuery = 'UPDATE orders SET status = ?';
             const updateParams = [status];
@@ -551,8 +591,8 @@ router.put('/:id/status', authenticateToken, async (req, res) => {
                 for (const item of returnItems) {
                     if (item.variant_id) {
                         await db.query(
-                            'UPDATE product_variants SET stock = stock + ?, sold = sold - ? WHERE id = ?',
-                            [item.quantity, item.quantity, item.variant_id]
+                            'UPDATE product_variants SET sold = sold - ? WHERE id = ?',
+                            [item.quantity, item.variant_id]
                         );
                     }
                 }
@@ -594,6 +634,10 @@ router.put('/:id/status', authenticateToken, async (req, res) => {
                         notificationTitle = 'Đã nhận hàng hoàn';
                         notificationMessage = `Đơn hàng #${orderId} đã được xác nhận nhận hàng hoàn tại kho. Chúng tôi sẽ xử lý hoàn tiền sớm nhất.`;
                         break;
+                    case 'return_shipped':
+                        notificationTitle = 'Khách đã gửi hàng hoàn';
+                        notificationMessage = `Đơn hàng #${orderId} đã được khách xác nhận gửi trả qua đơn vị vận chuyển.`;
+                        break;
                 }
                 
                 if (notificationTitle) {
@@ -625,10 +669,12 @@ router.get('/unsettled', authenticateToken, isAdmin, async (req, res) => {
     try {
         // Lấy các đơn không thỏa điều kiện của admin: (payment_method IN ('cod','bank')) OR (payment_method = 'vnpay' AND payment_status IN ('paid', 'refunded'))
         const [orders] = await db.query(
-            `SELECT o.*, u.email,
+            `SELECT o.*, u.email, u.full_name AS user_full_name,
                     ua.full_name AS recipient_name, ua.phone, ua.address_detail,
                     ua.province_name, ua.district_name, ua.ward_name,
-                    orr.return_reason, orr.return_evidence, orr.return_rejected_reason
+                          orr.return_reason, orr.return_evidence, orr.return_rejected_reason,
+                          orr.return_rejected_reason AS return_rejection_reason,
+                          orr.return_detailed
              FROM orders o 
              JOIN users u ON o.user_id = u.id 
              LEFT JOIN user_addresses ua ON o.user_address_id = ua.id
@@ -650,10 +696,12 @@ router.get('/unsettled', authenticateToken, isAdmin, async (req, res) => {
 router.get('/:id', authenticateToken, async (req, res) => {
     try {
         const [orders] = await db.query(
-            `SELECT o.*, u.email,
+            `SELECT o.*, u.email, u.full_name AS user_full_name,
                     ua.full_name AS recipient_name, ua.phone, ua.address_detail,
                     ua.province_name, ua.district_name, ua.ward_name,
-                    orr.return_reason, orr.return_evidence, orr.return_rejected_reason
+                          orr.return_reason, orr.return_evidence, orr.return_rejected_reason,
+                          orr.return_rejected_reason AS return_rejection_reason,
+                          orr.return_detailed
              FROM orders o 
              JOIN users u ON o.user_id = u.id 
              LEFT JOIN user_addresses ua ON o.user_address_id = ua.id
@@ -683,6 +731,33 @@ router.get('/:id', authenticateToken, async (req, res) => {
         res.json(order);
     } catch (err) {
         console.error('Error fetching order details:', err);
+        res.status(500).json({ error: 'Lỗi server', message: err.message });
+    }
+});
+
+// Lấy lịch sử trạng thái của đơn hàng
+router.get('/:id/status-logs', authenticateToken, async (req, res) => {
+    try {
+        const [orders] = await db.query('SELECT * FROM orders WHERE id = ?', [req.params.id]);
+        if (orders.length === 0) {
+            return res.status(404).json({ error: 'Không tìm thấy đơn hàng' });
+        }
+
+        const order = orders[0];
+
+        // Kiểm tra quyền xem đơn hàng
+        if (req.user.role !== 'admin' && req.user.role !== 'shipper' && order.user_id !== req.user.id) {
+            return res.status(403).json({ error: 'Không có quyền xem đơn hàng này' });
+        }
+
+        const [logs] = await db.query(
+            'SELECT * FROM order_status_logs WHERE order_id = ? ORDER BY created_at ASC',
+            [req.params.id]
+        );
+
+        res.json(logs);
+    } catch (err) {
+        console.error('Error fetching status logs:', err);
         res.status(500).json({ error: 'Lỗi server', message: err.message });
     }
 });
@@ -783,7 +858,7 @@ router.post('/:id/return-review', authenticateToken, isAdmin, async (req, res) =
             await db.query(
                 'INSERT INTO notifications (user_id, title, message, type, order_id) VALUES (?, ?, ?, ?, ?)',
                 [order.user_id, 'Yêu cầu hoàn trả được chấp nhận',
-                 `Yêu cầu hoàn trả đơn hàng #${orderId} đã được chấp nhận. Vui lòng gửi hàng về địa chỉ: ${warehouseAddress}`,
+                  `Yêu cầu hoàn trả đơn hàng #${orderId} đã được chấp nhận. Vui lòng gửi hàng về địa chỉ: ${warehouseAddress} và xác nhận "Đã gửi hàng hoàn" trên trang đơn hàng của bạn.`,
                  'order_status', orderId]
             ).catch(() => {});
             return res.json({ message: 'Đã duyệt yêu cầu hoàn trả' });
@@ -822,6 +897,194 @@ router.post('/:id/return-review', authenticateToken, isAdmin, async (req, res) =
         return res.status(400).json({ error: 'action phải là approve hoặc reject' });
     } catch (err) {
         console.error('Return review error:', err);
+        res.status(500).json({ error: 'Lỗi server', message: err.message });
+    }
+});
+
+// Khách hàng xác nhận đã gửi hàng hoàn qua đơn vị vận chuyển
+router.post('/:id/confirm-return-shipped', authenticateToken, async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const [orders] = await db.query('SELECT * FROM orders WHERE id = ?', [orderId]);
+        if (orders.length === 0) {
+            return res.status(404).json({ error: 'Không tìm thấy đơn hàng' });
+        }
+
+        const order = orders[0];
+        if (order.user_id !== req.user.id) {
+            return res.status(403).json({ error: 'Không có quyền thực hiện thao tác này' });
+        }
+
+        if (order.status !== 'return_approved') {
+            return res.status(400).json({ error: 'Đơn hàng chưa ở trạng thái được duyệt hoàn trả' });
+        }
+
+        let detailList = req.body.return_detailed;
+        if (typeof detailList === 'string') {
+            try {
+                detailList = JSON.parse(detailList);
+            } catch {
+                detailList = null;
+            }
+        }
+
+        if (!detailList) {
+            detailList = [{
+                carrier: req.body.carrier,
+                tracking_code: req.body.tracking_code,
+                receipt_image: req.body.receipt_image,
+                refund_info: req.body.refund_info,
+            }];
+        }
+
+        if (!Array.isArray(detailList)) {
+            detailList = [detailList];
+        }
+
+        const normalizedDetails = detailList
+            .map((item) => ({
+                carrier: String(item?.carrier || '').trim(),
+                tracking_code: String(item?.tracking_code || '').trim(),
+                receipt_image: String(item?.receipt_image || '').trim(),
+                refund_info: String(item?.refund_info || '').trim(),
+            }))
+            .filter((item) => item.carrier || item.tracking_code || item.receipt_image || item.refund_info);
+
+        if (normalizedDetails.length === 0) {
+            return res.status(400).json({ error: 'Vui lòng nhập thông tin gửi hàng hoàn' });
+        }
+
+        if (!normalizedDetails[0].carrier || !normalizedDetails[0].tracking_code) {
+            return res.status(400).json({ error: 'Vui lòng nhập đơn vị vận chuyển và mã vận đơn' });
+        }
+
+        const [updateReturn] = await db.query(
+            'UPDATE order_returns SET return_detailed = ? WHERE order_id = ?',
+            [JSON.stringify(normalizedDetails), orderId]
+        );
+
+        if (!updateReturn.affectedRows) {
+            return res.status(400).json({ error: 'Không tìm thấy thông tin yêu cầu hoàn trả cho đơn hàng này' });
+        }
+
+        await db.query("UPDATE orders SET status = 'return_shipped' WHERE id = ?", [orderId]);
+        await db.query(
+            'INSERT INTO order_status_logs (order_id, status_old, status_new, created_at) VALUES (?, ?, ?, NOW())',
+            [orderId, 'return_approved', 'return_shipped']
+        );
+
+        // Thông báo cho admin để kiểm tra kiện hàng trả về
+        const [admins] = await db.query("SELECT id FROM users WHERE role = 'admin'");
+        await Promise.all(
+            (admins || []).map((admin) => db.query(
+                'INSERT INTO notifications (user_id, title, message, type, order_id) VALUES (?, ?, ?, ?, ?)',
+                [admin.id, 'Khách đã gửi hàng hoàn', `Đơn hàng #${orderId}: khách đã xác nhận gửi hàng hoàn, vui lòng theo dõi để nhận hàng.`, 'order_status', orderId]
+            ).catch(() => {}))
+        );
+
+        res.json({
+            message: 'Đã xác nhận gửi hàng hoàn thành công',
+            return_detailed: normalizedDetails,
+        });
+    } catch (err) {
+        console.error('Confirm return shipped error:', err);
+        res.status(500).json({ error: 'Lỗi server', message: err.message });
+    }
+});
+
+// Admin: Từ chối hoàn trả khi khách đã gửi hàng nhưng hàng không thể tiếp tục xử lý
+router.post('/:id/reject-return-shipped', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const { reason } = req.body;
+
+        if (!reason || !reason.trim()) {
+            return res.status(400).json({ error: 'Vui lòng cung cấp lý do từ chối.' });
+        }
+
+        const [orders] = await db.query("SELECT * FROM orders WHERE id = ? AND status = 'return_shipped'", [orderId]);
+        if (orders.length === 0) {
+            return res.status(404).json({ error: 'Không tìm thấy đơn hàng hoặc đơn hàng không ở trạng thái phù hợp.' });
+        }
+
+        const order = orders[0];
+
+        await db.query("UPDATE orders SET status = 'return_rejected' WHERE id = ?", [orderId]);
+
+        await db.query(
+            'INSERT INTO order_status_logs (order_id, status_old, status_new, created_at) VALUES (?, ?, ?, NOW())',
+            [orderId, 'return_shipped', 'return_rejected']
+        );
+
+        await db.query(
+            'UPDATE order_returns SET return_rejected_reason = ? WHERE order_id = ?',
+            [reason.trim(), orderId]
+        ).catch(() => {});
+
+        await createNotification(
+            order.user_id,
+            'order_status',
+            'Yêu cầu hoàn trả bị từ chối',
+            `Đơn hàng #${orderId} đã bị từ chối hoàn trả. Lý do: ${reason.trim()}.`,
+            orderId
+        );
+
+        res.json({ message: 'Đã từ chối hoàn trả.' });
+    } catch (err) {
+        console.error('Error rejecting shipped return:', err);
+        res.status(500).json({ error: 'Lỗi server', message: err.message });
+    }
+});
+
+// Admin: Từ chối hoàn tiền khi hàng trả về bị hư hỏng
+router.post('/:id/refund-rejection', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        const { reason } = req.body;
+
+        if (!reason || !reason.trim()) {
+            return res.status(400).json({ error: 'Vui lòng nhập lý do từ chối' });
+        }
+
+        const [orders] = await db.query('SELECT * FROM orders WHERE id = ?', [orderId]);
+        if (orders.length === 0) return res.status(404).json({ error: 'Không tìm thấy đơn hàng' });
+        const order = orders[0];
+
+        if (order.status !== 'return_received' && order.status !== 'refund_pending') {
+            return res.status(400).json({ error: 'Đơn hàng không ở trạng thái chờ xử lý hoàn tiền' });
+        }
+
+        // Update order status to return_rejected
+        await db.query(
+            `UPDATE orders SET status = 'return_rejected' WHERE id = ?`,
+            [orderId]
+        );
+        
+        // Log status change
+        await db.query(
+            'INSERT INTO order_status_logs (order_id, status_old, status_new) VALUES (?, ?, ?)',
+            [orderId, order.status, 'return_rejected']
+        );
+        
+        // Update rejection reason in order_returns table
+        await db.query(
+            'UPDATE order_returns SET return_rejected_reason = ? WHERE order_id = ?',
+            [reason.trim(), orderId]
+        ).catch(() => {});
+        
+        // Send notification to customer
+        if (order.user_id) {
+            await db.query(
+                'INSERT INTO notifications (user_id, title, message, type, order_id) VALUES (?, ?, ?, ?, ?)',
+                [order.user_id, 'Yêu cầu hoàn tiền bị từ chối',
+                 `Yêu cầu hoàn tiền đơn hàng #${orderId} đã bị từ chối. Lý do: ${reason.trim()}. Vui lòng liên hệ admin để biết thêm chi tiết.`,
+                 'order_status', orderId]
+            ).catch(() => {});
+        }
+
+        return res.json({ message: 'Đã từ chối hoàn tiền' });
+    } catch (err) {
+        console.error('Refund rejection error:', err);
         res.status(500).json({ error: 'Lỗi server', message: err.message });
     }
 });
@@ -896,7 +1159,7 @@ router.post('/:id/reject-return', authenticateToken, isAdmin, async (req, res) =
 router.post('/:id/receive-return', authenticateToken, isAdmin, async (req, res) => {
     try {
         const orderId = req.params.id;
-        const [orders] = await db.query("SELECT * FROM orders WHERE id = ? AND status = 'return_approved'", [orderId]);
+        const [orders] = await db.query("SELECT * FROM orders WHERE id = ? AND status = 'return_shipped'", [orderId]);
         if (orders.length === 0) {
             return res.status(404).json({ message: 'Không tìm thấy đơn hàng hoặc đơn hàng không ở trạng thái phù hợp.' });
         }
@@ -908,14 +1171,14 @@ router.post('/:id/receive-return', authenticateToken, isAdmin, async (req, res) 
         // Log status change
         await db.query(
             'INSERT INTO order_status_logs (order_id, status_old, status_new, created_at) VALUES (?, ?, ?, NOW())',
-            [orderId, 'return_approved', 'return_received']
+            [orderId, 'return_shipped', 'return_received']
         );
 
         // Hoàn lại tồn kho
         const [items] = await db.query('SELECT variant_id, quantity FROM order_items WHERE order_id = ?', [orderId]);
         for (const item of items) {
             if (item.variant_id) {
-                await db.query('UPDATE product_variants SET stock = stock + ?, sold = sold - ? WHERE id = ?', [item.quantity, item.quantity, item.variant_id]);
+                await db.query('UPDATE product_variants SET sold = sold - ? WHERE id = ?', [item.quantity, item.variant_id]);
             }
         }
         

@@ -7,7 +7,7 @@ import { AlertCircle, Plus, X, Download, Filter, ChevronDown, ChevronRight, Pack
 const InventoryManager = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [tab, setTab] = useState('current');
+  const [tab, setTab] = useState(() => localStorage.getItem('inventoryTab') || 'current');
   const [colorVariants, setColorVariants] = useState([]); // grouped by (product, color)
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
@@ -35,6 +35,10 @@ const InventoryManager = () => {
     sizes: {}
   });
   const [stockHistory, setStockHistory] = useState([]);
+
+  useEffect(() => {
+    localStorage.setItem('inventoryTab', tab);
+  }, [tab]);
 
   const fetchStockHistory = async () => {
     try {
@@ -640,17 +644,17 @@ const InventoryManager = () => {
                   return (
                     <div 
                       key={colorVariant.id}
-                      className={`group transition-all duration-300 ${isExpanded ? 'ring-2 ring-blue-500 rounded-lg' : ''}`}
+                      className={`transition-all duration-200 ${isExpanded ? 'ring-1 ring-blue-300 rounded-lg' : ''}`}
                     >
                       {/* Color Variant Card Header */}
                       <div 
                         onClick={() => setExpandedColorId(isExpanded ? null : colorVariant.id)}
-                        className={`bg-white rounded-lg shadow border border-gray-200 p-5 cursor-pointer hover:border-blue-300 transition-all ${isExpanded ? 'rounded-b-none border-b-0' : ''}`}
+                        className={`bg-white rounded-lg shadow-sm border border-gray-200 p-5 cursor-pointer hover:border-blue-300 transition-all ${isExpanded ? 'rounded-b-none border-b-0' : ''}`}
                       >
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                           <div className="flex items-center gap-6">
                             {/* Product Thumbnail */}
-                            <div className="relative w-20 h-20 bg-gray-50 rounded-lg border border-gray-200 p-1 group-hover:scale-105 transition-transform overflow-hidden flex-shrink-0">
+                            <div className="relative w-20 h-20 bg-gray-50 rounded-lg border border-gray-200 p-1 overflow-hidden flex-shrink-0">
                               {colorVariant.images && colorVariant.images[0] ? (
                                 <img 
                                   src={colorVariant.images[0]} 
@@ -666,8 +670,8 @@ const InventoryManager = () => {
                             {/* Main Info */}
                             <div>
                               <div className="flex items-center gap-2 mb-1">
-                                <h3 className="text-lg font-extrabold text-gray-900 group-hover:text-blue-600 transition-colors">{colorVariant.product_name}</h3>
-                                <div className="text-[10px] font-bold uppercase tracking-tighter px-2 py-0.5 bg-gray-100 text-gray-500 rounded">
+                                <h3 className="text-2xl font-semibold text-gray-900">{colorVariant.product_name}</h3>
+                                <div className="text-xs font-medium px-2 py-0.5 bg-gray-100 text-gray-500 rounded">
                                   SKU: PRD-{colorVariant.product_id}
                                 </div>
                               </div>
@@ -687,16 +691,16 @@ const InventoryManager = () => {
                           {/* Quick Stats Summary */}
                           <div className="flex items-center gap-8 md:gap-12 pr-4">
                             <div className="text-center hidden sm:block">
-                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Tổng tồn</p>
-                              <p className="text-xl font-black text-gray-900">{totalStock}</p>
+                              <p className="text-xs font-medium text-gray-500 mb-1">Tổng tồn</p>
+                              <p className="text-3xl font-semibold text-gray-900">{totalStock}</p>
                             </div>
                             <div className="text-center">
-                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Đã bán</p>
-                              <p className="text-xl font-black text-gray-900">{calculateTotalSold(colorVariant)}</p>
+                              <p className="text-xs font-medium text-gray-500 mb-1">Đã bán</p>
+                              <p className="text-3xl font-semibold text-gray-900">{calculateTotalSold(colorVariant)}</p>
                             </div>
                             <div className="text-center">
-                              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Trạng thái</p>
-                              <div className={`mt-1 font-bold text-xs uppercase px-3 py-1 rounded-lg ${
+                              <p className="text-xs font-medium text-gray-500 mb-1">Trạng thái</p>
+                              <div className={`mt-1 font-semibold text-xs px-3 py-1 rounded-lg ${
                                 status === 'out' ? 'bg-red-50 text-red-600' :
                                 status === 'low' ? 'bg-yellow-50 text-yellow-600' :
                                 'bg-green-50 text-green-600'
@@ -708,16 +712,16 @@ const InventoryManager = () => {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 if (colorVariant.sizes && colorVariant.sizes[0]) {
-                                  window.scrollTo(0, 0);
+                                  window.scrollTo({ top: 0, behavior: 'smooth' });
                                   navigate(`/admin/products/variant/${colorVariant.sizes[0].id}`);
                                 }
                               }}
-                              className="px-4 py-2 bg-gray-800 text-white rounded-lg text-xs font-semibold hover:bg-gray-900 transition ml-4"
+                              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition ml-4"
                             >
                               Sửa
                             </button>
                             <div className="text-gray-400 ml-2">
-                              {isExpanded ? <ChevronDown size={24} className="animate-bounce-subtle" /> : <ChevronRight size={24} />}
+                              {isExpanded ? <ChevronDown size={24} /> : <ChevronRight size={24} />}
                             </div>
                           </div>
                         </div>
@@ -725,9 +729,9 @@ const InventoryManager = () => {
 
                       {/* Expanded Sizes Table */}
                       {isExpanded && (
-                        <div className="bg-white border border-gray-100 border-t-0 rounded-b-lg shadow-sm overflow-hidden animate-slide-down">
+                        <div className="bg-white border border-gray-200 border-t-0 rounded-b-lg shadow-sm overflow-hidden">
                           <table className="w-full text-sm">
-                            <thead className="bg-gray-50 border-b border-gray-100">
+                            <thead className="bg-gray-50 border-b border-gray-200">
                               <tr>
                                 <th className="px-6 py-3 text-left font-semibold text-gray-700">Size</th>
                                 <th className="px-6 py-3 text-left font-semibold text-gray-700">Tổng nhập</th>
@@ -743,14 +747,14 @@ const InventoryManager = () => {
                                   const sizeStatus = getSizeStatus(sizeVariant.stock);
                                   const statusBg = sizeStatus === 'out' ? 'bg-red-50 text-red-600' : sizeStatus === 'low' ? 'bg-yellow-50 text-yellow-600' : 'bg-green-50 text-green-600';
                                   return (
-                                    <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
+                                    <tr key={idx} className="border-b border-gray-200 hover:bg-gray-50">
                                       <td className="px-6 py-3 font-medium text-gray-900">{sizeVariant.size}</td>
                                       <td className="px-6 py-3 text-gray-600 font-medium">{parseInt(sizeVariant.quantity) || 0}</td>
                                       <td className="px-6 py-3 text-gray-600 font-medium">{parseInt(sizeVariant.stock) || 0}</td>
                                       <td className="px-6 py-3 text-gray-600">{parseInt(sizeVariant.sold) || 0}</td>
                                       <td className="px-6 py-3 text-gray-600 font-medium">{sizeVariant.import_price ? `${parseFloat(sizeVariant.import_price).toLocaleString('vi-VN')}đ` : 'N/A'}</td>
                                       <td className="px-6 py-3">
-                                        <span className={`inline-block font-bold text-xs uppercase px-2 py-1 rounded ${statusBg}`}>
+                                        <span className={`inline-block font-semibold text-xs px-2 py-1 rounded ${statusBg}`}>
                                           {getStatusLabel(sizeStatus)}
                                         </span>
                                       </td>

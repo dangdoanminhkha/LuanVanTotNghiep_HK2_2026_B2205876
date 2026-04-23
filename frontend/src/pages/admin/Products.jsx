@@ -119,6 +119,10 @@ const AdminProducts = () => {
   const [showColorForm, setShowColorForm] = useState(false);
   const [editingColor, setEditingColor] = useState(null);
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const fetchData = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
@@ -208,7 +212,7 @@ const AdminProducts = () => {
     });
     setEditingProduct(p);
     setShowForm(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToTop();
   };
 
   const filteredProducts = products.filter(p => {
@@ -298,7 +302,7 @@ const AdminProducts = () => {
     setBrandFormData(brand);
     setEditingBrand(brand);
     setShowBrandForm(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToTop();
   };
 
   // Category management functions
@@ -348,7 +352,7 @@ const AdminProducts = () => {
     setCategoryFormData(category);
     setEditingCategory(category);
     setShowCategoryForm(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToTop();
   };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center font-black text-2xl tracking-tighter text-gray-400">LOADING DATABASE...</div>;
@@ -712,7 +716,7 @@ const AdminProducts = () => {
             <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
               <div className="flex gap-4 w-full lg:w-auto">
                 <button 
-                  onClick={() => setShowBrandForm(true)} 
+                  onClick={() => { setShowBrandForm(true); scrollToTop(); }} 
                   className="px-4 py-2 bg-gray-800 text-white rounded-lg font-semibold hover:bg-gray-700 text-sm flex items-center gap-2"
                 >
                   <AiOutlinePlus size={16} /> Thêm
@@ -857,7 +861,7 @@ const AdminProducts = () => {
             <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
               <div className="flex gap-4 w-full lg:w-auto">
                 <button 
-                  onClick={() => setShowCategoryForm(true)} 
+                  onClick={() => { setShowCategoryForm(true); scrollToTop(); }} 
                   className="px-4 py-2 bg-gray-800 text-white rounded-lg font-semibold hover:bg-gray-700 text-sm flex items-center gap-2"
                 >
                   <AiOutlinePlus size={16} /> Thêm
@@ -1003,7 +1007,7 @@ const AdminProducts = () => {
             <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
               <div className="flex gap-4 w-full lg:w-auto">
                 <button 
-                  onClick={() => { setEditingColor(null); setColorFormData({ color: '', hex_code: '#000000' }); setShowColorForm(true); }} 
+                  onClick={() => { setEditingColor(null); setColorFormData({ color: '', hex_code: '#000000' }); setShowColorForm(true); scrollToTop(); }} 
                   className="px-4 py-2 bg-gray-800 text-white rounded-lg font-semibold hover:bg-gray-700 text-sm flex items-center gap-2"
                 >
                   <AiOutlinePlus size={16} /> Thêm màu

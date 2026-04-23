@@ -9,30 +9,31 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Breadcrumb from './components/Breadcrumb';
 import ScrollToTopButton from './components/ScrollToTopButton';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import Products from './pages/Products';
-import Collections from './pages/Collections';
-import BrandCollection from './pages/BrandCollection';
-import ProductDetail from './pages/ProductDetail';
-import GenderHome from './pages/GenderHome';
-import Cart from './pages/Cart';
-import Checkout from './pages/Checkout';
-import PaymentReturn from './pages/PaymentReturn';
-import PaymentDemo from './pages/PaymentDemo';
-import PaymentSuccess from './pages/PaymentSuccess';
-import MyOrders from './pages/MyOrders';
-import MyReviews from './pages/MyReviews';
-import Reviews from './pages/Reviews';
-import UserAccountLayout from './pages/UserAccountLayout';
-import Profile from './pages/Profile';
-import Notifications from './pages/Notifications';
-import Recommendations from './pages/Recommendations';
-import Favorites from './pages/Favorites';
-import ImageSearch from './pages/ImageSearch';
+import Home from './pages/user/Home';
+import Login from './pages/user/Login';
+import Register from './pages/user/Register';
+import ForgotPassword from './pages/user/ForgotPassword';
+import ResetPassword from './pages/user/ResetPassword';
+import Products from './pages/user/Products';
+import Collections from './pages/user/Collections';
+import BrandCollection from './pages/user/BrandCollection';
+import ProductDetail from './pages/user/ProductDetail';
+import GenderHome from './pages/user/GenderHome';
+import Cart from './pages/user/Cart';
+import Checkout from './pages/user/Checkout';
+import PaymentReturn from './pages/user/PaymentReturn';
+import PaymentDemo from './pages/user/PaymentDemo';
+import PaymentSuccess from './pages/user/PaymentSuccess';
+import MyOrders from './pages/user/MyOrders';
+import MyReviews from './pages/user/MyReviews';
+import Reviews from './pages/user/Reviews';
+import UserAccountLayout from './pages/user/UserAccountLayout';
+import Profile from './pages/user/Profile';
+import AddressManagement from './pages/user/AddressManagement';
+import Notifications from './pages/user/Notifications';
+import Recommendations from './pages/user/Recommendations';
+import Favorites from './pages/user/Favorites';
+import ImageSearch from './pages/user/ImageSearch';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminProducts from './pages/admin/Products';
 import AdminProductDetail from './pages/admin/ProductDetail';
@@ -46,12 +47,12 @@ import VoucherManager from './pages/admin/VoucherManager';
 import InventoryManager from './pages/admin/InventoryManager';
 import ShipperDelivery from './pages/shipper/Delivery';
 import PrivateRoute from './components/PrivateRoute';
-import CheckEmail from './pages/CheckEmail';
-import Verify from './pages/Verify';
-import Terms from './pages/Terms';
-import Privacy from './pages/Privacy';
-import ReturnPolicy from './pages/ReturnPolicy';
-import WarrantyPolicy from './pages/WarrantyPolicy';
+import CheckEmail from './pages/user/CheckEmail';
+import Verify from './pages/user/Verify';
+import Terms from './pages/user/Terms';
+import Privacy from './pages/user/Privacy';
+import ReturnPolicy from './pages/user/ReturnPolicy';
+import WarrantyPolicy from './pages/user/WarrantyPolicy';
 
 const AppRoutes = () => {
   const { isAdmin } = useAuth();
@@ -78,7 +79,7 @@ const AppRoutes = () => {
           <Route path="/login" element={isAdmin ? <Navigate to="/admin/dashboard" replace /> : <Login />} />
           <Route path="/forgot-password" element={isAdmin ? <Navigate to="/admin/dashboard" replace /> : <ForgotPassword />} />
           <Route path="/reset-password/:token" element={isAdmin ? <Navigate to="/admin/dashboard" replace /> : <ResetPassword />} />
-          
+       
           <Route path="/register" element={isAdmin ? <Navigate to="/admin/dashboard" replace /> : <Register />} />
           <Route path="/check-email" element={<CheckEmail />} />
           <Route path="/verify" element={<Verify />} />
@@ -109,6 +110,7 @@ const AppRoutes = () => {
             <Route path="profile" element={<Profile />} />
             <Route path="orders" element={<MyOrders />} />
             <Route path="notifications" element={<Notifications />} />
+            <Route path="addresses" element={<AddressManagement />} />
             <Route path="reviews" element={<Reviews />} />
             <Route index element={<Profile />} />
           </Route>

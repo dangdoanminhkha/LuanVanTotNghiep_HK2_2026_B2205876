@@ -113,6 +113,11 @@ const Delivery = () => {
     return configs[status] || { text: status, color: 'bg-gray-100 text-gray-700 border-gray-200', icon: '?' };
   };
 
+  const getShippingAddress = (order) => {
+    const parts = [order?.address_detail, order?.ward_name, order?.district_name, order?.province_name].filter(Boolean);
+    return parts.length ? parts.join(', ') : 'Chưa cập nhật';
+  };
+
   const filteredOrders = orders.filter(o => {
     if (filter === 'all') return true;
     if (filter === 'confirmed') return o.status === 'confirmed';
@@ -225,10 +230,16 @@ const Delivery = () => {
                       <span className="text-lg">👤</span>
                     </div>
                     <div className="flex-1 pt-1">
-                      <p className="font-bold text-slate-800 text-lg leading-none">{order.recipient_name || 'Khách hàng'}</p>
-                      <a href={`tel:${order.phone}`} className="inline-flex items-center gap-1.5 mt-2 text-blue-600 hover:text-blue-800 font-semibold bg-blue-50 px-3 py-1.5 rounded-lg text-sm transition-colors">
-                        <span>📞</span> {order.phone || 'Chưa cập nhật'}
-                      </a>
+                      <p className="font-bold text-slate-800 text-lg leading-none">{order.recipient_name || 'Chưa cập nhật'}</p>
+                      {order.phone ? (
+                        <a href={`tel:${order.phone}`} className="inline-flex items-center gap-1.5 mt-2 text-blue-600 hover:text-blue-800 font-semibold bg-blue-50 px-3 py-1.5 rounded-lg text-sm transition-colors">
+                          <span>📞</span> {order.phone}
+                        </a>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 mt-2 text-slate-500 font-semibold bg-slate-100 px-3 py-1.5 rounded-lg text-sm">
+                          <span>📞</span> Chưa cập nhật
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -239,7 +250,7 @@ const Delivery = () => {
                     </div>
                     <div className="flex-1 pt-1">
                       <p className="text-xs text-slate-500 font-medium mb-0.5">Địa chỉ giao hàng</p>
-                      <p className="text-slate-700 leading-snug">{order.shipping_address || 'Chưa cập nhật'}</p>
+                      <p className="text-slate-700 leading-snug">{getShippingAddress(order)}</p>
                     </div>
                   </div>
 
