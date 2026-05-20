@@ -9,7 +9,6 @@ const AddressManagement = () => {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [editingAddress, setEditingAddress] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   const fetchAddresses = async () => {
@@ -32,15 +31,9 @@ const AddressManagement = () => {
   const handleSave = async (formData) => {
     try {
       setSubmitting(true);
-      if (editingAddress) {
-        await api.put(`/addresses/${editingAddress.id}`, formData);
-        showSuccess('Thành công', 'Cập nhật địa chỉ thành công');
-      } else {
-        await api.post('/addresses', formData);
-        showSuccess('Thành công', 'Thêm địa chỉ mới thành công');
-      }
+      await api.post('/addresses', formData);
+      showSuccess('Thành công', 'Thêm địa chỉ mới thành công');
       setShowForm(false);
-      setEditingAddress(null);
       fetchAddresses();
     } catch (error) {
       console.error('Error saving address:', error);
@@ -75,7 +68,6 @@ const AddressManagement = () => {
         {!showForm && (
           <button
             onClick={() => {
-              setEditingAddress(null);
               setShowForm(true);
             }}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
@@ -87,15 +79,12 @@ const AddressManagement = () => {
 
       {showForm ? (
         <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">
-            {editingAddress ? 'Cập nhật địa chỉ' : 'Thêm địa chỉ mới'}
-          </h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Thêm địa chỉ mới</h2>
           <AddressForm
-            initialData={editingAddress}
+            initialData={null}
             onSubmit={handleSave}
             onCancel={() => {
               setShowForm(false);
-              setEditingAddress(null);
             }}
             loading={submitting}
           />
@@ -126,9 +115,6 @@ const AddressManagement = () => {
                   </div>
                   
                   <div className="flex items-center gap-3 sm:flex-col sm:items-end sm:gap-2">
-                    <div className="flex gap-3 text-sm">
-                      <button onClick={() => { setEditingAddress(addr); setShowForm(true); }} className="text-blue-600 hover:text-blue-800 font-medium">Cập nhật</button>
-                    </div>
                     {!addr.is_default && (
                       <button onClick={() => handleSetDefault(addr.id)} className="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-50 transition">
                         Thiết lập mặc định

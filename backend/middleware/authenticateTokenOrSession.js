@@ -30,6 +30,7 @@ const authenticateTokenOrSession = (req, res, next) => {
       // Guest user with valid session_id
       req.authType = 'session';
       req.user = null; // No authenticated user
+      // Giữ session flow cho guest để vẫn cá nhân hoá recommendation/cart tạm.
       next();
     } else {
       // No authentication method provided

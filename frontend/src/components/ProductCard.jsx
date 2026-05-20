@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { createProductSlug, parseImages } from '../utils/productUtils';
+import { createProductSlug, parseImages, getProductDisplayImage } from '../utils/productUtils';
 import { normalizeImageUrl } from '../utils/imageUrl';
 import { behaviorAPI, productsAPI } from '../services/api';
 import { useCart } from '../context/CartContext';
@@ -75,7 +75,7 @@ const ProductCard = ({ product, onClick = null, isNew = false, isBestselling = f
     return Number(price || 0).toLocaleString('vi-VN', { maximumFractionDigits: 0, minimumFractionDigits: 0 }) + 'đ';
   };
 
-  const productImage = product.image ? normalizeImageUrl(product.image) : FALLBACK_SVG_140;
+  const productImage = normalizeImageUrl(getProductDisplayImage(product)) || FALLBACK_SVG_140;
 
   return (
     <Link

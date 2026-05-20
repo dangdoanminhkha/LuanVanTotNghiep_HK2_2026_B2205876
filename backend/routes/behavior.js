@@ -58,6 +58,7 @@ const getBehaviorScoreCaseSql = (actionColumn = 'action', extraInfoColumn = 'ext
  */
 function callMLService(path) {
     return new Promise((resolve) => {
+        // Fail-open: mọi lỗi ML đều resolve null để backend fallback sang query DB.
         const options = {
             hostname: new URL(ML_SERVICE_URL).hostname,
             port: new URL(ML_SERVICE_URL).port || 80,
@@ -211,6 +212,7 @@ router.get('/recommendations', authenticateTokenOrSession, async (req, res) => {
         let mlUserId = userId;
         if (!mlUserId && sessionId) {
             // Create numeric ID from session UUID by hashing
+            // ML API hiện chỉ nhận user_id kiểu số nên cần ánh xạ tạm session -> int.
             mlUserId = Math.abs(sessionId.split('').reduce((a, c) => a + c.charCodeAt(0), 0)) % 999999 + 1000000;
         }
         
@@ -255,6 +257,7 @@ router.get('/recommendations', authenticateTokenOrSession, async (req, res) => {
             ORDER BY score DESC
             LIMIT ?
         `, params);
+        // Fallback này giúp recommendation vẫn hoạt động khi ML service down/retraining.
 
         if (behaviorData.length === 0) {
             const [rows] = await db.query('SELECT * FROM products ORDER BY id DESC LIMIT ?', [topN]);

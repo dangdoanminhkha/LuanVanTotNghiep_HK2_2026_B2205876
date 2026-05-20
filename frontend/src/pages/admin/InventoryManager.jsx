@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import AdminLayout from '../../components/AdminLayout';
 import { AlertCircle, Plus, X, Download, Filter, ChevronDown, ChevronRight, Package, Search, History, BarChart3, Layers, Trash2, Eye, EyeOff } from 'lucide-react';
+import { normalizeImageUrl } from '../../utils/imageUrl';
 
 const InventoryManager = () => {
   const location = useLocation();
@@ -657,9 +658,12 @@ const InventoryManager = () => {
                             <div className="relative w-20 h-20 bg-gray-50 rounded-lg border border-gray-200 p-1 overflow-hidden flex-shrink-0">
                               {colorVariant.images && colorVariant.images[0] ? (
                                 <img 
-                                  src={colorVariant.images[0]} 
+                                  src={normalizeImageUrl(colorVariant.images[0]) || colorVariant.images[0]} 
                                   alt={colorVariant.product_name} 
                                   className="w-full h-full object-contain mix-blend-multiply"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                  }}
                                 />
                               ) : (
                                 <Package className="w-full h-full p-4 text-gray-300" />
@@ -708,18 +712,6 @@ const InventoryManager = () => {
                                 {status === 'out' ? 'Có biến thể hết hàng' : status === 'low' ? 'Có biến thể gần hết' : 'Còn hàng'}
                               </div>
                             </div>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (colorVariant.sizes && colorVariant.sizes[0]) {
-                                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                                  navigate(`/admin/products/variant/${colorVariant.sizes[0].id}`);
-                                }
-                              }}
-                              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition ml-4"
-                            >
-                              Sửa
-                            </button>
                             <div className="text-gray-400 ml-2">
                               {isExpanded ? <ChevronDown size={24} /> : <ChevronRight size={24} />}
                             </div>

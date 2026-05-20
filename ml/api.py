@@ -57,6 +57,7 @@ TRAIN_SCRIPT = os.path.join(os.path.dirname(__file__), "train.py")
 
 # ── Flask App ─────────────────────────────────────────────────────────────────
 app = Flask(__name__)
+# Biến global để giữ model và CLIP service đã load sẵn.
 recommender: HybridRecommender | None = None
 image_searcher: ImageSearcher | None = None
 clip_model = None
@@ -66,6 +67,7 @@ _retrain_lock = threading.Lock()
 
 def load_model() -> None:
     global recommender, image_searcher, clip_model, clip_device
+    # Nạp các thành phần ML vào bộ nhớ để API phản hồi nhanh hơn.
     if os.path.exists(MODEL_PATH):
         recommender = HybridRecommender.load(MODEL_PATH)
         print(f"✓ Model sẵn sàng. {len(recommender.product_ids)} sản phẩm, "
@@ -101,6 +103,7 @@ def _run_retrain():
     """Chạy train.py trong process riêng và reload model sau khi xong."""
     global recommender
     try:
+        # Gọi script train riêng để không chặn request đang xử lý.
         result = subprocess.run(
             [sys.executable, TRAIN_SCRIPT],
             capture_output=True,
@@ -181,7 +184,7 @@ def recommend():
         is_cold_start = user_id not in recommender.user_id_to_idx
         has_cf = recommender.cf_predictions is not None
         
-        # Xác định method được sử dụng
+        # Chọn kiểu gợi ý phù hợp với trạng thái user và model.
         if is_cold_start and not product_id:
             method = "trending"
         elif is_cold_start or not has_cf:
@@ -309,6 +312,7 @@ def search_by_image():
         }), 400
 
     try:
+        # Lưu file upload tạm để CLIP xử lý rồi xóa ngay sau khi search.
         # Save to temp file
         import tempfile
         with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
@@ -316,6 +320,7 @@ def search_by_image():
             temp_path = tmp.name
 
         # Search
+        # Searcher trả về [(product_id, similarity)] đã được lọc theo threshold.
         results = image_searcher.search(temp_path, threshold=threshold, top_n=top_n)
 
         # Clean up

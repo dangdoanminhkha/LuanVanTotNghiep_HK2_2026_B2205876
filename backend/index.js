@@ -26,6 +26,7 @@ app.use(extractSessionId);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
+// Gom toàn bộ API dưới prefix `/api/*` để frontend chỉ cần cấu hình 1 baseURL.
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/auth', require('./routes/googleAuth'));
@@ -98,6 +99,7 @@ app.get('/', (req, res) => {
 });
 
 startOrderHoldWatcher();
+// Watcher chạy nền để tự huỷ các đơn online quá hạn thanh toán.
 
 app.listen(PORT, () => {
     console.log(`Server đang chạy tại http://localhost:${PORT}`);

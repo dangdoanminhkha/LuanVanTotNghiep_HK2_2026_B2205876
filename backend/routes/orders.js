@@ -139,6 +139,7 @@ router.post('/', authenticateToken, async (req, res) => {
                     'UPDATE product_variants SET sold = sold + ? WHERE id = ? AND (quantity - sold) >= ?',
                     [item.quantity, item.variant_id, item.quantity]
                 );
+                // Điều kiện `(quantity - sold) >= ?` giúp trừ kho an toàn khi nhiều user đặt cùng lúc.
 
                 if (updateResult.affectedRows === 0) {
                     const [variantRows] = await connection.query(

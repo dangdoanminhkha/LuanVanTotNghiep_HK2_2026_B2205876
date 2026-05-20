@@ -46,6 +46,7 @@ router.post('/', authenticateToken, async (req, res) => {
         }
 
         // Ghi log hành động add_to_cart
+        // Recommender đọc log này để tăng trọng số hành vi quan tâm sản phẩm.
         await db.query(
             'INSERT INTO user_behavior_logs (user_id, action, product_id, extra_info) VALUES (?, ?, ?, ?)',
             [req.user.id, 'add_to_cart', product_id, JSON.stringify({ quantity })]

@@ -328,6 +328,7 @@ def leave_one_out_split(behavior: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFr
     test_truth: Dict[int, int] = {int(r.user_id): int(r.product_id) for r in test_rows.itertuples()}
 
     # remove target event and all future events for same user from train
+    # Mục tiêu: mô phỏng dự đoán "tại thời điểm trước khi user tương tác item test".
     cutoff_map = {int(r.user_id): r.ts for r in test_rows.itertuples()}
 
     keep_train = []
@@ -463,14 +464,8 @@ def run_evaluation(csv_path: str, topk: int) -> Dict[str, Dict[str, float]]:
 
     print("[2] Building normalized products_df / behavior_df...")
     products_df = build_products_df(raw)
-    asin_tmp = raw["url"].apply(extract_asin)
-    asin_to_pid = (
-        pd.DataFrame({"asin": asin_tmp})
-        .join(raw[["url"]])
-        .drop_duplicates(subset=["asin"])
-        .set_index("asin")
-        .index
-    )
+    # Mapping chính thức dùng pid_map bên dưới (ổn định theo ASIN).
+    # Khối asin_to_pid cũ không còn cần trong pipeline hiện tại.
     # use products_df for final mapping to guarantee consistency
     pid_map = {
         extract_asin(url): int(pid)
@@ -500,6 +495,7 @@ def run_evaluation(csv_path: str, topk: int) -> Dict[str, Dict[str, float]]:
     print("[4] Training & Tuning models (CF, CBF, Hybrid Variations)...")
     
     # 1. Khởi tạo danh sách các cấu hình cần test
+    # Mỗi cấu hình dưới đây để so sánh cách phối CF và CBF.
     configs = [
         {"name": "cf_only", "cf": 1.0, "cbf": 0.0, "use_context": False},
         {"name": "cbf_only", "cf": 0.0, "cbf": 1.0, "use_context": True},
@@ -514,6 +510,7 @@ def run_evaluation(csv_path: str, topk: int) -> Dict[str, Dict[str, float]]:
     print(f"[5] Evaluating @K={topk}...")
     for cfg in configs:
         print(f"    -> Đang đánh giá {cfg['name']}...")
+        # Train từng cấu hình riêng rồi lấy metric để so sánh trực tiếp.
         model = HybridRecommender(cf_weight=cfg["cf"], cbf_weight=cfg["cbf"])
         model.fit(products_eval, train_behavior)
         
