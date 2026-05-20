@@ -22,10 +22,11 @@ app.use(express.json());
 // Apply session ID middleware globally to extract guest session_id from headers
 app.use(extractSessionId);
 
-// Serve static files từ uploads folder
-app.use('/uploads', express.static('uploads'));
+// Serve static files từ uploads folder (absolute path to avoid cwd-dependent 404s)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
+// Gom toàn bộ API dưới prefix `/api/*` để frontend chỉ cần cấu hình 1 baseURL.
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/auth', require('./routes/googleAuth'));
@@ -98,6 +99,7 @@ app.get('/', (req, res) => {
 });
 
 startOrderHoldWatcher();
+// Watcher chạy nền để tự huỷ các đơn online quá hạn thanh toán.
 
 app.listen(PORT, () => {
     console.log(`Server đang chạy tại http://localhost:${PORT}`);

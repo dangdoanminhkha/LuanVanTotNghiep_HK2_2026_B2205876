@@ -45,6 +45,7 @@ class ImageSearcher:
         if not HAS_CLIP:
             raise RuntimeError("CLIP dependencies chưa cài.")
 
+        # Khởi tạo model CLIP một lần để tái sử dụng cho nhiều request.
         # Load CLIP model
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model, _, self.preprocess = open_clip.create_model_and_transforms(
@@ -322,6 +323,7 @@ class ImageSearcher:
             return []
 
         # Tính similarity với tất cả cached embeddings (variant images)
+        # Gom theo product_id để một sản phẩm chỉ xuất hiện một lần trong kết quả.
         # similarities[item_id] = similarity_score
         similarities_by_item = {}
         for item_id, product_embedding in self.embeddings_cache.items():
@@ -331,6 +333,8 @@ class ImageSearcher:
                 similarities_by_item[item_id] = similarity
 
         # Group by product_id: lấy max similarity per product
+        # 1 sản phẩm có thể có nhiều ảnh (nhiều màu/góc chụp), nên chỉ giữ điểm cao nhất
+        # để tránh một product chiếm quá nhiều slot trong top_k.
         similarities_by_product = {}
         for item_id, similarity in similarities_by_item.items():
             # Get product_id từ metadata

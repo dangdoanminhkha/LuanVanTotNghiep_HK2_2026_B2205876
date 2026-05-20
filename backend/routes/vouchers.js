@@ -250,7 +250,7 @@ router.post('/validate', authenticateToken, async (req, res) => {
       });
     }
 
-    // Tính discount
+    // Tính discount phần tiền; free_shipping sẽ được frontend/backend checkout xử lý riêng.
     let discount = 0;
     if (voucher.voucher_type === 'discount') {
       discount = voucher.discount_amount;
@@ -286,7 +286,7 @@ router.post('/apply-to-order', authenticateToken, async (req, res) => {
     const user = req.user;
     const { voucher_id, order_id, discount_applied } = req.body;
 
-    // Cập nhật user_voucher_usage
+    // Ghi usage theo user trước để đảm bảo giới hạn lượt dùng được theo dõi chính xác.
     const upsertUsageQuery = `
       INSERT INTO user_voucher_usage (user_id, voucher_id, used_count)
       VALUES (?, ?, 1)

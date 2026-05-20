@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 // Middleware xác thực token
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
+    // Chuẩn header mong đợi: "Authorization: Bearer <token>"
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
@@ -14,6 +15,7 @@ const authenticateToken = (req, res, next) => {
             return res.status(403).json({ error: 'Token không hợp lệ hoặc đã hết hạn', details: err.message });
         }
         req.user = user;
+        // req.user chứa payload JWT (id/email/role) cho các middleware phía sau.
         next();
     });
 };

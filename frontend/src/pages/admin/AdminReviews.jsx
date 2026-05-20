@@ -14,9 +14,11 @@ const AdminReviews = () => {
   const { modal, closeModal, showError, showSuccess } = useModal();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [filter, setFilter] = useState('all'); // 'all', 'no_reply', 'replied'
+  const [filter, setFilter] = useState(() => {
+    return localStorage.getItem('adminReviewsTab') || 'all';
+  }); // 'all', 'no_reply', 'replied'
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 20;
+  const ITEMS_PER_PAGE = 5;
   const [replyText, setReplyText] = useState({});
   const [submitting, setSubmitting] = useState(new Set());
   const isFirstLoadRef = useRef(true);
@@ -28,6 +30,10 @@ const AdminReviews = () => {
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
+
+  useEffect(() => {
+    localStorage.setItem('adminReviewsTab', filter);
+  }, [filter]);
 
   // Sync filter and range from Dashboard if provided
   useEffect(() => {
@@ -189,45 +195,6 @@ const AdminReviews = () => {
     <AdminLayout>
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Quản lý đánh giá</h1>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Tổng đánh giá</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">📊</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Chờ phản hồi</p>
-                <p className="text-2xl font-bold text-orange-600">{stats.no_reply}</p>
-              </div>
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">⏳</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Đã phản hồi</p>
-                <p className="text-2xl font-bold text-green-600">{stats.replied}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <span className="text-2xl">✅</span>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Filter Tabs */}
         <div className="bg-white rounded-lg shadow-sm mb-6">

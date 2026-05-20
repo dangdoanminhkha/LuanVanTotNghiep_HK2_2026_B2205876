@@ -205,6 +205,7 @@ class ShoeImageEvaluator:
                     continue
                 result_path = self.gallery_paths[product_id]
                 # Skip query image itself
+                # LOO yêu cầu retrieval "ảnh khác cùng class", không tính chính nó.
                 if result_path == query_path:
                     continue
                 
@@ -235,6 +236,7 @@ class ShoeImageEvaluator:
                 mrr_sum += 1.0 / first_hit_pos
                 
             precision_sum += correct_images_in_top_k / top_k
+            # Bản chất đây là AP@K gần đúng cho bài toán chỉ có 1 lớp đúng theo label.
             ap_sum += query_ap / top_k
             
             detailed_results.append({

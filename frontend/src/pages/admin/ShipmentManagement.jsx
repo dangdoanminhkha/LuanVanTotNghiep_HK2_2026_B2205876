@@ -8,7 +8,11 @@ const ShipmentManagement = () => {
   const navigate = useNavigate();
   const [shipments, setShipments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState(() => localStorage.getItem('shipmentTab') || 'all');
+
+  useEffect(() => {
+    localStorage.setItem('shipmentTab', filter);
+  }, [filter]);
 
   const fetchShipments = async () => {
     try {

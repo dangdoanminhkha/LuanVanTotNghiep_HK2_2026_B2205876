@@ -25,11 +25,22 @@ const upload = multer({
     }
 });
 
+// Tránh trình duyệt/cache trung gian giữ lại danh sách sản phẩm cũ sau khi xóa/cập nhật.
+router.use((req, res, next) => {
+    if (req.method === 'GET') {
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.set('Pragma', 'no-cache');
+        res.set('Expires', '0');
+    }
+    next();
+});
+
 /**
  * Trigger ML retrain (non-blocking)
  * Gọi khi có product mới để ML model học product đó ngay
  */
 function triggerMLRetrain() {
+    // Gọi async để tránh request admin phải chờ train xong.
     const options = {
         hostname: new URL(ML_SERVICE_URL).hostname,
         port: new URL(ML_SERVICE_URL).port || 80,
@@ -249,8 +260,12 @@ router.get('/all', async (req, res) => {
             query += ' AND p.discount > 0';
         }
 
-        // Group by product_id to aggregate reviews
+        // Group by product_id để aggregate rating + sold theo từng sản phẩm gốc.
         query += ' GROUP BY p.id';
+
+        // Chỉ hiển thị sản phẩm còn ít nhất một biến thể màu hợp lệ trên storefront.
+        // Tránh trường hợp còn row variant rác (ví dụ color_id NULL) khiến sản phẩm vẫn hiện.
+        query += ' HAVING variant_count > 0';
 
         // Sorting logic
         switch (sort) {
@@ -286,6 +301,7 @@ router.get('/all', async (req, res) => {
         
         // Limit results if specified
         if (limit && parseInt(limit) > 0) {
+            // limit đã parseInt trước khi gắn vào query để tránh input không hợp lệ.
             query += ` LIMIT ${parseInt(limit)}`;
         }
 

@@ -533,6 +533,7 @@ async function handleVNPayIPN(req, res) {
     // Kiểm tra order đã thanh toán
     if (order.payment_status === 'paid') {
       console.warn('⚠️ IPN: Order đã thanh toán rồi (trùng request)');
+      // Trả success để VNPay ngừng retry callback cho cùng giao dịch.
       return res.json({ RspCode: '00', Message: 'Order already confirmed' });
     }
 

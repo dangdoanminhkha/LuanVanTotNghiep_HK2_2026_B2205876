@@ -68,6 +68,7 @@ router.post('/register',
             // Transfer any guest cart and behavior data to newly created account
             if (req.sessionId) {
                 const migrationResult = await transferGuestDataToUser(req.sessionId, insertId);
+                // migrationResult không trả ra client để response đăng ký luôn nhất quán.
                 // Migration data silently
             }
 
@@ -171,6 +172,7 @@ router.post('/login', async (req, res) => {
         // Transfer any guest cart and behavior data ONLY for customer role
         if (user.role === 'customer' && req.sessionId) {
             const migrationResult = await transferGuestDataToUser(req.sessionId, user.id);
+            // Chạy trước khi trả token để session guest được hợp nhất ngay sau login.
             // Migration data silently
         }
         

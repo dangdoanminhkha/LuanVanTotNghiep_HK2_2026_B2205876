@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
+import { normalizeImageUrl } from '../utils/imageUrl';
 
 const FILE_API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/upload';
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -14,13 +15,28 @@ const FALLBACK_SVG = `data:image/svg+xml;utf8,${encodeURIComponent(`
 
 const FileUpload = ({ onUploadSuccess, currentImage, folder = 'general' }) => {
   const [uploading, setUploading] = useState(false);
-  const [preview, setPreview] = useState(() => {
-    if (!currentImage) return '';
-    if (currentImage.startsWith('http')) return currentImage;
-    // Convert relative path like '/uploads/...' to absolute URL
-    return `${BASE_URL}${currentImage}`;
-  });
+  const [preview, setPreview] = useState(() => normalizeImageUrl(currentImage));
   const [error, setError] = useState('');
+  const objectUrlRef = useRef('');
+
+  useEffect(() => {
+    const nextPreview = normalizeImageUrl(currentImage);
+
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = '';
+    }
+
+    setPreview(nextPreview);
+  }, [currentImage]);
+
+  useEffect(() => {
+    return () => {
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+      }
+    };
+  }, []);
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -37,6 +53,14 @@ const FileUpload = ({ onUploadSuccess, currentImage, folder = 'general' }) => {
       setError('Chỉ chấp nhận file ảnh');
       return;
     }
+
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+    }
+
+    const localPreviewUrl = URL.createObjectURL(file);
+    objectUrlRef.current = localPreviewUrl;
+    setPreview(localPreviewUrl);
 
     setUploading(true);
     setError('');
@@ -55,11 +79,12 @@ const FileUpload = ({ onUploadSuccess, currentImage, folder = 'general' }) => {
 
       if (response.data.success) {
         // Convert relative path to fullURL only for preview display
-        const fullUrl = response.data.url.startsWith('http') 
-          ? response.data.url 
-          : `${BASE_URL}${response.data.url}`;
-        
+        const fullUrl = normalizeImageUrl(response.data.url);
         setPreview(fullUrl);
+        if (objectUrlRef.current) {
+          URL.revokeObjectURL(objectUrlRef.current);
+          objectUrlRef.current = '';
+        }
         // Send relative path to backend, not fullURL
         onUploadSuccess(response.data.url);
       }

@@ -113,6 +113,7 @@ def load_products(conn) -> pd.DataFrame:
         FROM products
     """
 
+    # Thử từ schema mới -> cũ để script chạy được trên nhiều bản DB migration khác nhau.
     for query in (query_fk, query_mixed, query_text):
         try:
             df = pd.read_sql(query, conn)
@@ -173,6 +174,7 @@ def load_variant_images_for_cache(conn) -> list:
     """
     try:
         cursor = conn.cursor(dictionary=True)
+        # Chỉ lấy 1 ảnh đại diện cho mỗi màu để giảm số embedding phải cache.
         # Load all variants, will GROUP in Python to avoid MySQL only_full_group_by mode
         cursor.execute("""
             SELECT 
@@ -299,6 +301,7 @@ def main():
                 
                 # Fallback về base product images nếu không có variants
                 if not variant_images:
+                    # Nếu chưa có ảnh biến thể, dùng ảnh sản phẩm gốc làm cache dự phòng.
                     print("    Không tìm thấy variant images, fallback to product base images...")
                     variant_images = load_products_for_image_cache(conn)
             finally:

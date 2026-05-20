@@ -12,6 +12,7 @@ const pool = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 0
 });
+// Dùng pool để tái sử dụng connection và hỗ trợ transaction qua getConnection().
 
 // Test connection
 pool.getConnection().then(conn => {

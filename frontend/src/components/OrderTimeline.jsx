@@ -1,154 +1,170 @@
+﻿import { useState, useEffect } from 'react';
+import axios from 'axios';
+
 const OrderTimeline = ({ order }) => {
-  // Xây dựng các bước timeline dựa vào trạng thái hiện tại
-  const getTimelineSteps = () => {
-    const steps = [
-      {
-        status: 'pending',
-        label: 'Đặt hàng',
-        description: 'Đơn hàng đã được đặt',
-        icon: '📝',
-        time: order.created_at,
-        completed: ['pending', 'confirmed', 'shipping', 'delivered', 'failed_delivery', 'failed_delivery_retry', 'return', 'refund', 'return_requested', 'return_approved', 'return_rejected', 'return_received'].includes(order.status)
-      },
-      {
-        status: 'confirmed',
-        label: 'Xác nhận đơn',
-        description: 'Đơn hàng đã được xác nhận',
-        icon: '✓',
-        time: order.confirmed_at,
-        completed: ['confirmed', 'shipping', 'delivered', 'failed_delivery', 'failed_delivery_retry', 'return', 'refund', 'return_requested', 'return_approved', 'return_rejected', 'return_received'].includes(order.status)
-      },
-      {
-        status: 'shipping',
-        label: 'Đang vận chuyển',
-        description: 'Shipper đang giao hàng',
-        icon: '🚚',
-        time: order.shipping_at,
-        completed: ['shipping', 'delivered', 'failed_delivery', 'failed_delivery_retry', 'return', 'refund', 'return_requested', 'return_approved', 'return_rejected', 'return_received'].includes(order.status)
+  const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStatusLogs = async () => {
+      try {
+        if (order?.id) {
+          const response = await axios.get(`/orders/${order.id}/status-logs`);
+          setLogs(Array.isArray(response.data) ? response.data : []);
+        }
+      } catch (err) {
+        console.error('Lỗi lấy log trạng thái:', err);
+        setLogs([]);
+      } finally {
+        setLoading(false);
       }
+    };
+
+    setLoading(true);
+    fetchStatusLogs();
+  }, [order?.id]);
+
+  // Tìm thời điểm chuyển sang status cụ thể từ logs
+  const getTimeForStatus = (status) => {
+    if (!Array.isArray(logs)) return null;
+    if (status === 'pending') return order?.created_at;
+    const log = logs.find(l => l.status_new === status);
+    return log ? log.created_at : null;
+  };
+
+  // Xây dựng các bước timeline dựa vào trạng thái hiện tại và logs
+  const getTimelineSteps = () => {
+    // Định nghĩa các bước cơ bản
+    const baseSteps = [
+      { status: 'pending', label: 'Đặt hàng', description: 'Đơn hàng đã được đặt', icon: '📝' },
+      { status: 'confirmed', label: 'Xác nhận đơn', description: 'Đơn hàng đã được xác nhận', icon: '✓' },
+      { status: 'shipping', label: 'Đang vận chuyển', description: 'Shipper đang giao hàng', icon: '🚚' },
+      { status: 'delivered', label: 'Giao hàng thành công', description: 'Khách hàng đã nhận hàng', icon: '✅' }
     ];
 
-    // Kiểm tra flow: 
-    // Flow 1 (Giao thất bại): failed_delivery_at→return→refund (không có return_requested_at)
-    // Flow 2 (Hoàn hàng): delivered→return_requested→return_approved→return_received→refund (có return_requested_at)
-    const isReturnFlow = order.return_requested_at; // Flow hoàn hàng có return_requested_at
+    const steps = [];
 
-    // Thêm bước giao thất bại nếu là FLOW 1 (giao thất bại, không phải hoàn hàng)
-    if (!isReturnFlow && ['failed_delivery_retry', 'failed_delivery', 'return', 'refund'].includes(order.status)) {
+    // Thêm các bước cơ bản dựa trên order.status
+    const orderStatus = order?.status;
+    const statusOrder = ['pending', 'confirmed', 'shipping', 'delivered', 'return_requested', 'return_approved', 'return_shipped', 'return_rejected', 'return_received', 'failed_delivery', 'refund', 'cancelled'];
+    const currentStatusIndex = statusOrder.indexOf(orderStatus);
+
+    // Thêm các bước cơ bản
+    for (const step of baseSteps) {
+      const stepIndex = statusOrder.indexOf(step.status);
+      const time = getTimeForStatus(step.status);
+      const isCompleted = time || stepIndex < currentStatusIndex;
+      const isOngoing = step.status === orderStatus;
+
       steps.push({
-        status: 'failed_delivery_retry',
-        label: `Giao thất bại (Lần ${order.retry_count || 1})`,
-        description: `Không thể giao hàng - ${order.retry_count || 1}/3 lần thử`,
-        icon: '⚠️',
-        time: order.failed_delivery_at,
-        completed: ['failed_delivery', 'return', 'refund'].includes(order.status),
-        ongoing: order.status === 'failed_delivery_retry'
+        ...step,
+        time: time,
+        completed: !!isCompleted,
+        ongoing: isOngoing
       });
     }
 
-    // Thêm bước giao thất bại cuối cùng nếu là FLOW 1
-    if (!isReturnFlow && ['return', 'refund'].includes(order.status)) {
-      steps.push({
-        status: 'failed_delivery',
-        label: 'Giao thất bại (Cuối cùng)',
-        description: 'Đã hết lượt thử giao hàng',
-        icon: '❌',
-        time: order.failed_delivery_final_at,
-        completed: ['return', 'refund'].includes(order.status)
-      });
-    }
-
-    // Thêm bước giao thành công hoặc trả hàng
-    if (order.status === 'delivered') {
-      steps.push({
-        status: 'delivered',
-        label: 'Giao hàng thành công',
-        description: 'Khách hàng đã nhận hàng',
-        icon: '✅',
-        time: order.delivered_at,
-        completed: true
-      });
-    } else if (['return_requested', 'return_approved', 'return_rejected', 'return_received', 'refund'].includes(order.status) && isReturnFlow) {
-      // Flow 2: Customer-initiated return flow
-      steps.push({
-        status: 'delivered',
-        label: 'Giao hàng thành công',
-        description: 'Khách hàng đã nhận hàng',
-        icon: '✅',
-        time: order.delivered_at,
-        completed: true
-      });
+    // Nếu có yêu cầu hoàn trả
+    const isReturnFlow = !!getTimeForStatus('return_requested');
+    if (isReturnFlow || orderStatus?.includes('return')) {
+      const returnRequestedTime = getTimeForStatus('return_requested');
       steps.push({
         status: 'return_requested',
         label: 'Yêu cầu hoàn trả',
-        description: order.return_reason ? `Lý do: ${order.return_reason}` : 'Khách hàng gửi yêu cầu hoàn trả',
+        description: order?.return_reason ? `Lý do: ${order.return_reason}` : 'Khách hàng gửi yêu cầu hoàn trả',
         icon: '📦',
-        time: order.return_requested_at,
-        completed: ['return_approved', 'return_rejected', 'return_received', 'refund'].includes(order.status),
-        ongoing: order.status === 'return_requested'
+        time: returnRequestedTime,
+        completed: returnRequestedTime ? true : currentStatusIndex >= statusOrder.indexOf('return_requested'),
+        ongoing: orderStatus === 'return_requested'
       });
-      if (['return_approved', 'return_received', 'refund'].includes(order.status)) {
+
+      const returnApprovedAt = getTimeForStatus('return_approved');
+      if (returnApprovedAt || orderStatus === 'return_approved') {
         steps.push({
           status: 'return_approved',
           label: 'Hoàn trả được duyệt',
           description: 'Admin đã chấp thuận yêu cầu, gửi hàng về kho',
           icon: '✅',
-          time: order.return_approved_at,
-          completed: ['return_received', 'refund'].includes(order.status),
-          ongoing: order.status === 'return_approved'
+          time: returnApprovedAt,
+          completed: returnApprovedAt ? true : currentStatusIndex >= statusOrder.indexOf('return_approved'),
+          ongoing: orderStatus === 'return_approved'
         });
       }
-      if (['return_received', 'refund'].includes(order.status)) {
+
+      const returnShippedAt = getTimeForStatus('return_shipped');
+      if (returnShippedAt || orderStatus === 'return_shipped' || currentStatusIndex >= statusOrder.indexOf('return_shipped')) {
+        steps.push({
+          status: 'return_shipped',
+          label: 'Khách đã gửi hàng',
+          description: 'Khách hàng đã bàn giao kiện hàng cho ĐVVC',
+          icon: '📤',
+          time: returnShippedAt,
+          completed: returnShippedAt ? true : currentStatusIndex >= statusOrder.indexOf('return_shipped'),
+          ongoing: orderStatus === 'return_shipped'
+        });
+      }
+
+      const returnRejectedAt = getTimeForStatus('return_rejected');
+      if (returnRejectedAt || orderStatus === 'return_rejected') {
+        steps.push({
+          status: 'return_rejected',
+          label: 'Yêu cầu bị từ chối',
+          description: order?.return_rejection_reason ? `Lý do: ${order.return_rejection_reason}` : 'Yêu cầu hoàn trả không được chấp thuận',
+          icon: '❌',
+          time: returnRejectedAt,
+          completed: true
+        });
+      }
+
+      const returnReceivedAt = getTimeForStatus('return_received');
+      if (returnReceivedAt || orderStatus === 'return_received') {
         steps.push({
           status: 'return_received',
           label: 'Đã nhận hàng hoàn',
           description: 'Kho đã nhận hàng, tồn kho được cộng lại',
           icon: '🏠',
-          time: order.return_received_at,
-          completed: ['refund'].includes(order.status)
+          time: returnReceivedAt,
+          completed: returnReceivedAt ? true : currentStatusIndex >= statusOrder.indexOf('return_received'),
+          ongoing: orderStatus === 'return_received'
         });
       }
-      if (order.status === 'return_rejected') {
-        steps.push({
-          status: 'return_rejected',
-          label: 'Yêu cầu bị từ chối',
-          description: order.return_rejection_reason ? `Lý do: ${order.return_rejection_reason}` : 'Yêu cầu hoàn trả không được chấp thuận',
-          icon: '❌',
-          time: order.return_rejected_at,
-          completed: true
-        });
-      }
-    } else if (!isReturnFlow && ['return', 'refund'].includes(order.status)) {
-      // Flow 1: Failed delivery return flow (không qua hoàn hàng)
+    }
+
+    // Nếu giao hàng thất bại
+    const failedAt = getTimeForStatus('failed_delivery');
+    if (failedAt || orderStatus === 'failed_delivery') {
       steps.push({
-        status: 'return',
-        label: 'Trả hàng',
-        description: 'Hàng đã trả về kho',
-        icon: '↩️',
-        time: order.return_at,
-        completed: ['refund'].includes(order.status)
+        status: 'failed_delivery',
+        label: 'Giao thất bại (Cuối cùng)',
+        description: 'Đã hết lượt thử giao hàng',
+        icon: '❌',
+        time: failedAt,
+        completed: failedAt ? true : currentStatusIndex >= statusOrder.indexOf('failed_delivery')
       });
     }
 
-    if (order.status === 'refund') {
+    // Hoàn tiền
+    const refundAt = getTimeForStatus('refund');
+    if (refundAt || orderStatus === 'refund') {
       steps.push({
         status: 'refund',
         label: 'Đã hoàn tiền',
         description: 'Khách hàng đã nhận lại tiền',
-        icon: '✅',
-        time: order.refunded_at,
+        icon: '💰',
+        time: refundAt,
         completed: true
       });
     }
 
-    // Thêm bước hủy đơn nếu có
-    if (order.status === 'cancelled') {
+    // Hủy đơn
+    const cancelledAt = getTimeForStatus('cancelled');
+    if (cancelledAt || orderStatus === 'cancelled') {
       steps.push({
         status: 'cancelled',
         label: 'Đơn bị hủy',
         description: 'Đơn hàng đã bị hủy bỏ',
         icon: '❌',
-        time: order.cancelled_at,
+        time: cancelledAt,
         completed: true
       });
     }
@@ -165,7 +181,6 @@ const OrderTimeline = ({ order }) => {
         <div className="flex gap-2 pb-1" style={{ minWidth: 'max-content' }}>
           {steps.map((step, index) => (
             <div key={step.status} className="flex items-stretch gap-1 flex-shrink-0">
-              {/* Timeline step card */}
               <div
                 className={`relative flex flex-col items-center justify-start min-w-max px-4 py-3 rounded border-l-4 ${
                   step.completed
@@ -175,7 +190,6 @@ const OrderTimeline = ({ order }) => {
                     : 'bg-gray-50 border-l-gray-300'
                 }`}
               >
-                {/* Status dot */}
                 <div
                   className={`w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-bold mb-2 flex-shrink-0 ${
                     step.completed
@@ -187,8 +201,6 @@ const OrderTimeline = ({ order }) => {
                 >
                   {step.completed ? '✓' : step.ongoing ? '▶' : '○'}
                 </div>
-
-                {/* Timeline content */}
                 <div className={`text-center text-xs ${step.completed || step.ongoing ? 'text-gray-900' : 'text-gray-400'}`}>
                   <p className="font-semibold whitespace-nowrap">{step.label}</p>
                   {step.time && (
@@ -203,8 +215,6 @@ const OrderTimeline = ({ order }) => {
                   )}
                 </div>
               </div>
-
-              {/* Connector line */}
               {index < steps.length - 1 && (
                 <div className="flex items-center justify-center px-1 flex-shrink-0">
                   <div className="h-0.5 w-3 bg-gray-300"></div>

@@ -199,6 +199,17 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(404).json({ error: 'Không tìm thấy địa chỉ' });
     }
 
+    // Không cho xóa địa chỉ đã được dùng trong đơn hàng để tránh mất thông tin giao hàng lịch sử
+    const [usedInOrders] = await db.query(
+      'SELECT COUNT(*) AS count FROM orders WHERE user_address_id = ?',
+      [id]
+    );
+    if (usedInOrders[0].count > 0) {
+      return res.status(400).json({
+        error: 'Địa chỉ này đã được dùng trong đơn hàng, không thể xóa. Vui lòng tạo địa chỉ mới và đặt làm mặc định.'
+      });
+    }
+
     const isDeletedDefault = existing[0].is_default;
 
     await db.query('DELETE FROM user_addresses WHERE id = ? AND user_id = ?', [id, req.user.id]);
