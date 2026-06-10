@@ -24,7 +24,7 @@ const VoucherSelector = ({ orderTotal = 0, selectedVoucher = null, onVoucherSele
         return;
       }
 
-      const res = await axios.get('http://localhost:5000/api/vouchers/available', {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/vouchers/available`, {
         params: { order_total: orderTotal },
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -48,7 +48,7 @@ const VoucherSelector = ({ orderTotal = 0, selectedVoucher = null, onVoucherSele
       setApplyingVoucherId(voucher.id);
       const token = localStorage.getItem('token');
       const validateRes = await axios.post(
-        'http://localhost:5000/api/vouchers/validate',
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/vouchers/validate`,
         {
           voucher_code: voucher.code,
           order_total: orderTotal

@@ -22,7 +22,7 @@ const Delivery = () => {
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/orders/shipper', {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders/shipper`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setOrders(response.data || []);
@@ -49,7 +49,7 @@ const Delivery = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `http://localhost:5000/api/orders/${orderId}/status`,
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders/${orderId}/status`,
         { status, note, payment_status },
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -29,18 +29,18 @@ const VariantDetail = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const variantRes = await axios.get(`http://localhost:5000/api/products/variant/${id}`);
+        const variantRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products/variant/${id}`);
         setVariant(variantRes.data);
         setFormData(variantRes.data);
 
         // Fetch product base info
         if (variantRes.data.product_id) {
-          const prodRes = await axios.get(`http://localhost:5000/api/products/base/${variantRes.data.product_id}`);
+          const prodRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products/base/${variantRes.data.product_id}`);
           setProduct(prodRes.data);
 
           // Fetch all variants for this product to filter by color
           try {
-            const allVariantsRes = await axios.get(`http://localhost:5000/api/products`);
+            const allVariantsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`);
             const allData = allVariantsRes.data || [];
             // Filter variants by product_id
             const pVariants = allData.filter(v => v.product_id === variantRes.data.product_id);
@@ -72,7 +72,7 @@ const VariantDetail = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `http://localhost:5000/api/products/variant/${id}`,
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products/variant/${id}`,
         {
           product_id: formData.product_id,
           color: formData.color,
@@ -98,7 +98,7 @@ const VariantDetail = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/products/variant/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products/variant/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       showSuccess('Thành công', 'Đã xóa biến thể');

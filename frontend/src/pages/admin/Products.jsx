@@ -127,11 +127,11 @@ const AdminProducts = () => {
     try {
       const token = localStorage.getItem('token');
       const [resP, resV, resB, resC, resCol] = await Promise.all([
-        axios.get('http://localhost:5000/api/products/all'),
-        axios.get('http://localhost:5000/api/products'),
-        axios.get('http://localhost:5000/api/brands'),
-        axios.get('http://localhost:5000/api/categories-new'),
-        axios.get('http://localhost:5000/api/colors', {
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products/all`),
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`),
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/brands`),
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/categories-new`),
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/colors`, {
           headers: { Authorization: `Bearer ${token}` }
         })
       ]);
@@ -155,9 +155,9 @@ const AdminProducts = () => {
       const token = localStorage.getItem('token');
       const data = { ...formData, price: parseInt(formData.price) };
       if (editingProduct) {
-        await axios.put(`http://localhost:5000/api/products/base/${editingProduct.id}`, data, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products/base/${editingProduct.id}`, data, { headers: { Authorization: `Bearer ${token}` } });
       } else {
-        await axios.post('http://localhost:5000/api/products/base', data, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products/base`, data, { headers: { Authorization: `Bearer ${token}` } });
       }
       resetForm();
       fetchData();
@@ -171,7 +171,7 @@ const AdminProducts = () => {
     if (!window.confirm('Xóa sản phẩm này sẽ xóa tất cả các biến thể liên quan. Tiếp tục?')) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/products/base/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products/base/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       fetchData();
     } catch {
       showError('Lỗi', 'Lỗi khi xóa');
@@ -261,12 +261,12 @@ const AdminProducts = () => {
     try {
       const token = localStorage.getItem('token');
       if (editingBrand) {
-        await axios.put(`http://localhost:5000/api/brands/${editingBrand.id}`, brandFormData, { 
+        await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/brands/${editingBrand.id}`, brandFormData, { 
           headers: { Authorization: `Bearer ${token}` } 
         });
         showSuccess('Thành công', 'Cập nhật thương hiệu thành công');
       } else {
-        await axios.post('http://localhost:5000/api/brands', brandFormData, { 
+        await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/brands`, brandFormData, { 
           headers: { Authorization: `Bearer ${token}` } 
         });
         showSuccess('Thành công', 'Thêm thương hiệu thành công');
@@ -282,7 +282,7 @@ const AdminProducts = () => {
     if (!window.confirm('Bạn có chắc muốn xóa thương hiệu này?')) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/brands/${id}`, { 
+      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/brands/${id}`, { 
         headers: { Authorization: `Bearer ${token}` } 
       });
       showSuccess('Thành công', 'Xóa thương hiệu thành công');
@@ -311,12 +311,12 @@ const AdminProducts = () => {
     try {
       const token = localStorage.getItem('token');
       if (editingCategory) {
-        await axios.put(`http://localhost:5000/api/categories-new/${editingCategory.id}`, categoryFormData, {
+        await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/categories-new/${editingCategory.id}`, categoryFormData, {
           headers: { Authorization: `Bearer ${token}` }
         });
         showSuccess('Thành công', 'Cập nhật loại giày thành công');
       } else {
-        await axios.post('http://localhost:5000/api/categories-new', categoryFormData, {
+        await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/categories-new`, categoryFormData, {
           headers: { Authorization: `Bearer ${token}` }
         });
         showSuccess('Thành công', 'Thêm loại giày thành công');
@@ -332,7 +332,7 @@ const AdminProducts = () => {
     if (!window.confirm('Bạn có chắc muốn xóa loại giày này?')) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/categories-new/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/categories-new/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       showSuccess('Thành công', 'Xóa loại giày thành công');
@@ -1031,11 +1031,11 @@ const AdminProducts = () => {
                   try {
                     const token = localStorage.getItem('token');
                     if (editingColor) {
-                      await axios.put(`http://localhost:5000/api/colors/${editingColor.id}`, colorFormData, {
+                      await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/colors/${editingColor.id}`, colorFormData, {
                         headers: { Authorization: `Bearer ${token}` }
                       });
                     } else {
-                      await axios.post('http://localhost:5000/api/colors', colorFormData, {
+                      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/colors`, colorFormData, {
                         headers: { Authorization: `Bearer ${token}` }
                       });
                     }
@@ -1122,7 +1122,7 @@ const AdminProducts = () => {
                         if (!window.confirm(`Xóa màu "${color.color}"?`)) return;
                         try {
                           const token = localStorage.getItem('token');
-                          await axios.delete(`http://localhost:5000/api/colors/${color.id}`, {
+                          await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/colors/${color.id}`, {
                             headers: { Authorization: `Bearer ${token}` }
                           });
                           fetchData();

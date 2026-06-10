@@ -29,10 +29,10 @@ const MyReviews = () => {
     try {
       const token = localStorage.getItem('token');
       const [reviewableRes, reviewsRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/reviews/reviewable', {
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/reviews/reviewable`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get('http://localhost:5000/api/reviews/my', {
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/reviews/my`, {
           headers: { Authorization: `Bearer ${token}` }
         })
       ]);

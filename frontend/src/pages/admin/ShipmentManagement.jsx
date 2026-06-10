@@ -18,7 +18,7 @@ const ShipmentManagement = () => {
     try {
       const token = localStorage.getItem('token');
       // Lấy đơn hàng để tạo danh sách giao hàng
-      const ordersRes = await axios.get('http://localhost:5000/api/orders', {
+      const ordersRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       // Chỉ lấy các đơn đã xác nhận trở lên (không lấy pending)
@@ -45,7 +45,7 @@ const ShipmentManagement = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `http://localhost:5000/api/orders/${orderId}/status`,
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders/${orderId}/status`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } }
       );

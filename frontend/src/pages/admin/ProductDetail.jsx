@@ -32,16 +32,16 @@ const ProductDetail = () => {
     try {
       const token = localStorage.getItem('token');
       const [productsRes, variantsRes, brandsRes, categoriesRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/products/all', {
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products/all`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get('http://localhost:5000/api/products', {
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get('http://localhost:5000/api/brands', {
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/brands`, {
           headers: { Authorization: `Bearer ${token}` }
         }).catch(() => ({ data: [] })),
-        axios.get('http://localhost:5000/api/categories', {
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/categories`, {
           headers: { Authorization: `Bearer ${token}` }
         }).catch(() => ({ data: [] }))
       ]);

@@ -259,7 +259,7 @@ const Dashboard = () => {
     setError(null);
     try {
       const token = localStorage.getItem('token');
-      let url = `http://localhost:5000/api/admin/dashboard?range=${selectedRange}`;
+      let url = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/dashboard?range=${selectedRange}`;
       
       // Add custom date parameters if in custom mode
       if (selectedRange === 'custom' && startDate && endDate) {

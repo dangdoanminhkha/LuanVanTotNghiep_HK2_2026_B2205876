@@ -73,7 +73,7 @@ const AdminReviews = () => {
         setLoading(true);
       }
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/reviews/admin/all', {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/reviews/admin/all`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setReviews(response.data || []);
@@ -96,7 +96,7 @@ const AdminReviews = () => {
     
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`http://localhost:5000/api/reviews/${reviewId}/reply`, {
+      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/reviews/${reviewId}/reply`, {
         reply_text: reply
       }, {
         headers: { Authorization: `Bearer ${token}` }

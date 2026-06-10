@@ -26,7 +26,7 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/users/profile', {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/profile`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const profileData = response.data;
@@ -79,7 +79,7 @@ const Profile = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put('http://localhost:5000/api/users/profile', {
+      const response = await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/profile`, {
         full_name: userInfo.full_name,
         phone: userInfo.phone,
         gender: userInfo.gender
@@ -122,7 +122,7 @@ const Profile = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.put('http://localhost:5000/api/users/change-password', {
+      await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/change-password`, {
         currentPassword: passwords.currentPassword,
         newPassword: passwords.newPassword
       }, {

@@ -55,7 +55,7 @@ const ReviewList = ({ productId, onStatsUpdate }) => {
         config.headers = { Authorization: `Bearer ${token}` };
       }
 
-      const response = await axios.get(`http://localhost:5000/api/reviews/product/${productId}`, config);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/reviews/product/${productId}`, config);
       setReviews(response.data || []);
     } catch (error) {
       console.error('Error fetching reviews:', error);
@@ -67,7 +67,7 @@ const ReviewList = ({ productId, onStatsUpdate }) => {
 
   const fetchStats = useCallback(async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/reviews/product/${productId}/stats`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/reviews/product/${productId}/stats`);
       const statsData = response.data;
       setStats(statsData);
       
@@ -118,7 +118,7 @@ const ReviewList = ({ productId, onStatsUpdate }) => {
     setLikeLoadingIds((prev) => new Set(prev).add(reviewId));
 
     try {
-      const endpoint = `http://localhost:5000/api/reviews/${reviewId}/like`;
+      const endpoint = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/reviews/${reviewId}/like`;
       const headers = { Authorization: `Bearer ${token}` };
       let response;
 

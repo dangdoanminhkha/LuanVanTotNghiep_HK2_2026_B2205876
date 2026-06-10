@@ -3,7 +3,7 @@ import axios from 'axios';
 import Modal from './Modal';
 import { useModal } from '../hooks/useModal';
 
-const PROVINCES_API = 'http://localhost:5000/api/provinces';
+const PROVINCES_API = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/provinces`;
 
 const AddressForm = ({ onSubmit, onCancel, initialData = null, loading = false }) => {
   const { modal, closeModal, showError } = useModal();

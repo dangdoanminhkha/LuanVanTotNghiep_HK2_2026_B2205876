@@ -48,7 +48,7 @@ const Revenue = () => {
         params.endDate = customEndDate;
       }
       
-      const res = await axios.get('http://localhost:5000/api/admin/revenue', {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/revenue`, {
         headers: {
           Authorization: `Bearer ${token}`
         },
@@ -85,7 +85,7 @@ const Revenue = () => {
         params.endDate = customEndDate;
       }
       
-      const res = await axios.get('http://localhost:5000/api/admin/expenses', {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/expenses`, {
         headers: {
           Authorization: `Bearer ${token}`
         },

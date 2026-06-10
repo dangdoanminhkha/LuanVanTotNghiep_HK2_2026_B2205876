@@ -1,5 +1,5 @@
 // Normalize image URL to absolute URL
-// Convert '/uploads/...' to 'http://localhost:5000/uploads/...'
+// Convert '/uploads/...' to `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/uploads/...`
 const extractImageValue = (value) => {
   if (!value) return '';
 

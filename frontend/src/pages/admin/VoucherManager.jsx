@@ -37,7 +37,7 @@ const VoucherManager = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/vouchers/admin/list', {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/vouchers/admin/list`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setVouchers(res.data.vouchers || []);
@@ -93,14 +93,14 @@ const VoucherManager = () => {
       if (editingId) {
         // Update existing voucher
         await axios.put(
-          `http://localhost:5000/api/vouchers/admin/${editingId}/update`,
+          `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/vouchers/admin/${editingId}/update`,
           submitData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         showSuccess('Thành công', 'Cập nhật voucher thành công');
       } else {
         // Create new voucher
-        await axios.post('http://localhost:5000/api/vouchers/admin/create', submitData, {
+        await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/vouchers/admin/create`, submitData, {
           headers: { Authorization: `Bearer ${token}` }
         });
         showSuccess('Thành công', 'Tạo voucher mới thành công');
@@ -198,7 +198,7 @@ const VoucherManager = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/vouchers/admin/${voucherId}/deactivate`, {}, {
+      await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/vouchers/admin/${voucherId}/deactivate`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       showSuccess('Thành công', 'Vô hiệu hóa voucher thành công');

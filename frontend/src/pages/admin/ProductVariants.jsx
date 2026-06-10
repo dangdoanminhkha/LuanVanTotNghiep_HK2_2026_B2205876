@@ -43,7 +43,7 @@ const ProductVariants = ({ products, variants, fetchData, filterGender, filterCa
     const fetchColors = async () => {
       try {
         const token = localStorage.getItem('token');
-        const colorsRes = await axios.get('http://localhost:5000/api/colors', {
+        const colorsRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/colors`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setColors(colorsRes.data || []);
@@ -104,7 +104,7 @@ const ProductVariants = ({ products, variants, fetchData, filterGender, filterCa
           const baseQty = Number(formData[`qty_${variant.size}`]) || Number(variant.quantity);
           const addQty = Number(formData[`add_qty_${variant.size}`]) || 0;
           
-          await axios.put(`http://localhost:5000/api/products/${variant.id}`, {
+          await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products/${variant.id}`, {
             product_id: productId,
             color_id: colorData.id,
             size: variant.size,
@@ -118,7 +118,7 @@ const ProductVariants = ({ products, variants, fetchData, filterGender, filterCa
         const existingSizes = currentGroupVariants.map(v => v.size);
         const newSizes = selectedSizes.filter(s => !existingSizes.includes(s));
         for (const size of newSizes) {
-          await axios.post('http://localhost:5000/api/products', {
+          await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, {
             product_id: productId,
             color: formData.color,
             size,
@@ -140,7 +140,7 @@ const ProductVariants = ({ products, variants, fetchData, filterGender, filterCa
         }
 
         for (const size of selectedSizes) {
-          await axios.post('http://localhost:5000/api/products', {
+          await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products`, {
             product_id: productId,
             color: formData.color,
             size,
@@ -188,7 +188,7 @@ const ProductVariants = ({ products, variants, fetchData, filterGender, filterCa
     if (!window.confirm('Xóa phiên bản này?')) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/products/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/products/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       fetchData();
     } catch {
       showError('Lỗi', 'Không thể xóa. Vui lòng thử lại.');

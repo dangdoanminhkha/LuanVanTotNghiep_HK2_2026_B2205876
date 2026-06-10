@@ -120,7 +120,7 @@ const Orders = () => {
     setExpandedOrderId(orderId);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/api/orders/${orderId}`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders/${orderId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setExpandedOrderDetail(response.data);
@@ -253,7 +253,7 @@ const Orders = () => {
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/orders', {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setOrders(response.data || []);
@@ -269,7 +269,7 @@ const Orders = () => {
       setLoadingUnsettled(true);
       const token = localStorage.getItem('token');
       console.log('Fetching unsettled orders with token:', token ? 'YES' : 'NO');
-      const response = await axios.get('http://localhost:5000/api/orders/unsettled', {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders/unsettled`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       console.log('Unsettled response:', response.data);
@@ -285,7 +285,7 @@ const Orders = () => {
     try {
       setLoadingDetails(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/api/orders/${orderId}`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders/${orderId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setOrderDetails(response.data);
@@ -305,7 +305,7 @@ const Orders = () => {
         try {
           const token = localStorage.getItem('token');
           await axios.put(
-            `http://localhost:5000/api/orders/${orderId}/status`,
+            `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders/${orderId}/status`,
             { payment_status },
             { headers: { Authorization: `Bearer ${token}` } }
           );
@@ -329,7 +329,7 @@ const Orders = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `http://localhost:5000/api/orders/${orderId}/status`,
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders/${orderId}/status`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -350,7 +350,7 @@ const Orders = () => {
         try {
           const token = localStorage.getItem('token');
           await axios.post(
-            `http://localhost:5000/api/orders/${orderId}/process-refund`,
+            `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders/${orderId}/process-refund`,
             {},
             { headers: { Authorization: `Bearer ${token}` } }
           );
@@ -379,7 +379,7 @@ const Orders = () => {
         try {
           const token = localStorage.getItem('token');
           await axios.put(
-            `http://localhost:5000/api/orders/${orderId}/status`,
+            `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders/${orderId}/status`,
             { status: 'return_approved' },
             { headers: { Authorization: `Bearer ${token}` } }
           );
@@ -404,7 +404,7 @@ const Orders = () => {
         try {
           const token = localStorage.getItem('token');
           await axios.put(
-            `http://localhost:5000/api/orders/${orderId}/status`,
+            `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders/${orderId}/status`,
             { status: 'return_received' },
             { headers: { Authorization: `Bearer ${token}` } }
           );
@@ -429,7 +429,7 @@ const Orders = () => {
         try {
           const token = localStorage.getItem('token');
           await axios.post(
-            `http://localhost:5000/api/orders/${orderId}/process-refund`,
+            `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders/${orderId}/process-refund`,
             {},
             { headers: { Authorization: `Bearer ${token}` } }
           );
@@ -456,7 +456,7 @@ const Orders = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        `http://localhost:5000/api/orders/${orderId}/return-review`,
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders/${orderId}/return-review`,
         { action, rejection_reason: returnRejectReason },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -479,7 +479,7 @@ const Orders = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        `http://localhost:5000/api/orders/${orderId}/refund-rejection`,
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders/${orderId}/refund-rejection`,
         { reason: refundRejectionReason },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -504,7 +504,7 @@ const Orders = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        `http://localhost:5000/api/orders/${orderId}/reject-return-shipped`,
+        `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders/${orderId}/reject-return-shipped`,
         { reason: returnRejectReason },
         { headers: { Authorization: `Bearer ${token}` } }
       );
