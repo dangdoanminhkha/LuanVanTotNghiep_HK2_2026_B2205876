@@ -11,7 +11,8 @@ const pool = mysql.createPool({
     charset: 'utf8mb4',
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    queueLimit: 0,
+    ssl: (process.env.DB_HOST && process.env.DB_HOST.includes('aivencloud.com')) || process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
 });
 // Dùng pool để tái sử dụng connection và hỗ trợ transaction qua getConnection().
 
