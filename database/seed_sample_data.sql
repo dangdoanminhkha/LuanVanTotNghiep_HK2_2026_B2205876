@@ -1,7 +1,6 @@
 -- Seed sample data for shoestore
 -- Purpose: insert 2-3 demo rows per table for quick local testing
-
-USE shoestore;
+-- USE shoestore;
 SET NAMES utf8mb4;
 
 SET FOREIGN_KEY_CHECKS=0;

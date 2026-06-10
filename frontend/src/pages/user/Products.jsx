@@ -186,22 +186,22 @@ const Products = ({ title = "Cửa hàng", presetFilters = {}, hideTitle = false
       <div className="relative group">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`flex items-center gap-2 px-5 py-3 rounded-2xl border transition-all text-sm font-bold ${
-            value ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-700 border-gray-100 hover:border-indigo-200'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all text-sm font-semibold ${
+            value ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
           }`}
         >
           {label}
           {displayValue && <span className="ml-1 bg-white/20 px-1.5 py-0.5 rounded text-[10px]">{displayValue}</span>}
-          <svg className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <svg className={`w-3.5 h-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
 
         {isOpen && (
           <>
             <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)}></div>
-            <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 z-20 py-3 animate-fade-in">
-              <div className="max-h-60 overflow-y-auto px-2 space-y-1">
+            <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 z-20 py-2.5 animate-fade-in">
+              <div className="max-h-60 overflow-y-auto px-2 space-y-0.5">
                 {normalizedOptions.map((opt) => (
                   <button
                     key={opt.value}
@@ -209,7 +209,7 @@ const Products = ({ title = "Cửa hàng", presetFilters = {}, hideTitle = false
                       onSelect(opt.value === value ? '' : opt.value);
                       setIsOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                    className={`w-full text-left px-3.5 py-2 rounded-lg text-sm font-medium transition-colors ${
                       value === opt.value ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50 text-gray-600'
                     }`}
                   >
@@ -228,21 +228,21 @@ const Products = ({ title = "Cửa hàng", presetFilters = {}, hideTitle = false
     <div className="max-w-[1440px] mx-auto px-4 py-8">
       {/* Header & Search */}
       {!hideTitle && (
-      <div className="mb-12">
+      <div className="mb-10">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
           <div>
-            <h1 className="text-5xl font-black text-gray-900 mb-3 flex items-center gap-4">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2 flex items-center gap-3">
               {title}
-              <span className="text-xl font-bold text-indigo-600 bg-indigo-50 px-4 py-1.5 rounded-full">{products.length}</span>
+              <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-md">{products.length}</span>
             </h1>
-            <p className="text-gray-500 font-medium text-lg">Khám phá phong cách của riêng bạn qua từng sải bước</p>
+            <p className="text-gray-500 font-medium text-sm">Khám phá phong cách của riêng bạn qua từng sải bước</p>
           </div>
         </div>
       </div>
       )}
 
       {/* Filter Row */}
-      <div className="flex flex-wrap items-center gap-3 mb-12 p-2 bg-gray-50/50 rounded-[32px] border border-gray-100/50">
+      <div className="flex flex-wrap items-center gap-3 mb-10 p-3 bg-white rounded-2xl border border-gray-100 premium-shadow">
         <FilterDropdown 
           label="Thương hiệu" 
           value={selectedBrand}
@@ -284,49 +284,49 @@ const Products = ({ title = "Cửa hàng", presetFilters = {}, hideTitle = false
         {/* Price Dropdown */}
         <div className="relative group">
           <button
-            className={`flex items-center gap-2 px-5 py-3 rounded-2xl border transition-all text-sm font-bold ${
-              minPrice || maxPrice ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-700 border-gray-100 hover:border-indigo-200'
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all text-sm font-semibold ${
+              minPrice || maxPrice ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
             }`}
           >
             Giá
             {(minPrice || maxPrice) && <span className="ml-1 bg-white/20 px-1.5 py-0.5 rounded text-[10px]">Tùy chọn</span>}
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
-          <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 z-20 p-6 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+          <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-xl shadow-2xl border border-gray-100 z-20 p-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
              <div className="space-y-4">
                <div>
-                 <label className="text-[10px] font-black uppercase text-gray-400 mb-2 block">Từ giá</label>
+                 <label className="text-[10px] font-bold uppercase text-gray-400 mb-1.5 block">Từ giá</label>
                  <input
                     type="text"
-                    placeholder=""
+                    placeholder="đ"
                     value={minPrice}
                     onChange={(e) => {
                       const val = e.target.value.replace(/[^0-9]/g, '');
                       updateParams({ minPrice: val });
                     }}
-                    className="w-full px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 font-bold"
+                    className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500 font-bold"
                   />
                </div>
                <div>
-                 <label className="text-[10px] font-black uppercase text-gray-400 mb-2 block">Đến giá</label>
+                 <label className="text-[10px] font-bold uppercase text-gray-400 mb-1.5 block">Đến giá</label>
                  <input
                     type="text"
-                    placeholder=""
+                    placeholder="đ"
                     value={maxPrice}
                     onChange={(e) => {
                       const val = e.target.value.replace(/[^0-9]/g, '');
                       updateParams({ maxPrice: val });
                     }}
-                    className="w-full px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500 font-bold"
+                    className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500 font-bold"
                   />
                </div>
              </div>
           </div>
         </div>
 
-        <div className="h-8 w-[1px] bg-gray-200 mx-2 hidden lg:block"></div>
+        <div className="h-6 w-[1px] bg-gray-200 mx-2 hidden lg:block"></div>
 
         <div className="flex-1"></div>
 
@@ -335,7 +335,7 @@ const Products = ({ title = "Cửa hàng", presetFilters = {}, hideTitle = false
           <select
             value={sortBy}
             onChange={(e) => updateParams({ sort: e.target.value })}
-            className="px-6 py-3 bg-white border border-gray-100 rounded-2xl shadow-sm focus:ring-4 focus:ring-indigo-50/50 outline-none cursor-pointer font-bold text-gray-700 hover:border-indigo-300 transition-all appearance-none pr-12"
+            className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500/20 outline-none cursor-pointer font-semibold text-sm text-gray-700 hover:border-gray-300 transition-all appearance-none pr-10"
           >
             <option value="newest">Mới nhất</option>
             <option value="price_asc">Giá: Thấp - Cao</option>
@@ -344,9 +344,9 @@ const Products = ({ title = "Cửa hàng", presetFilters = {}, hideTitle = false
             <option value="name_desc">Tên: Z - A</option>
             <option value="bestselling">Bán chạy nhất</option>
           </select>
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
             </svg>
           </div>
         </div>
@@ -355,7 +355,7 @@ const Products = ({ title = "Cửa hàng", presetFilters = {}, hideTitle = false
         {(selectedBrand || selectedGender || selectedCategory || selectedColor || selectedSize || minPrice || maxPrice || search) && (
           <button 
             onClick={clearAllFilters}
-            className="flex items-center gap-2 px-5 py-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-2xl transition-colors border border-transparent hover:border-red-100"
+            className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-red-500 hover:bg-red-50 rounded-xl transition-colors border border-transparent hover:border-red-100"
           >
             <AiOutlineClose /> Xóa lọc
           </button>

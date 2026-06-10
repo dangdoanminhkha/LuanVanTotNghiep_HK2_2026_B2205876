@@ -76,88 +76,104 @@ const ProductCard = ({ product, onClick = null, isNew = false, isBestselling = f
   };
 
   const productImage = normalizeImageUrl(getProductDisplayImage(product)) || FALLBACK_SVG_140;
+  const discountVal = product.discount_percentage || product.discount || 0;
+  const hasDiscount = discountVal > 0;
+  const salePrice = hasDiscount ? Math.round(product.price * (1 - discountVal / 100)) : product.price;
 
   return (
     <Link
       to={`/products/${createProductSlug(product)}`}
       onClick={handleProductClick}
-      className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-lg transition flex flex-col group/card relative"
+      className="bg-white rounded-2xl p-4 border border-gray-100 premium-shadow premium-card-hover flex flex-col group/card relative overflow-hidden transition-all duration-300"
     >
       {/* Badges */}
-      <div className="absolute top-3 left-3 flex gap-2 z-10">
+      <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
         {isNew && (
-          <div className="bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full">
-            Mới
-          </div>
+          <span className="bg-emerald-500 text-white text-[9px] font-extrabold tracking-wider uppercase px-2 py-0.5 rounded-md shadow-sm">
+            MỚI
+          </span>
         )}
         {isBestselling && (
-          <div className="bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded-full">
-            Bán chạy
-          </div>
+          <span className="bg-indigo-600 text-white text-[9px] font-extrabold tracking-wider uppercase px-2 py-0.5 rounded-md shadow-sm">
+            HOT
+          </span>
         )}
       </div>
 
       {/* Discount Badge */}
-      {(product.discount_percentage || product.discount || 0) > 0 && (
-        <div className="absolute top-3 right-3 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full z-10">
-          -{product.discount_percentage || product.discount}%
+      {hasDiscount && (
+        <div className="absolute top-3 right-3 bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm z-10">
+          -{discountVal}%
         </div>
       )}
 
-      {/* Image */}
-      <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-gray-100">
+      {/* Image Container with zoom effect */}
+      <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-gray-50/80 flex items-center justify-center relative">
         <img
           src={productImage}
           alt={product.name}
-          className="w-full h-full object-contain group-hover/card:scale-105 transition-transform duration-300"
+          className="w-full h-full object-contain p-2 group-hover/card:scale-110 transition-transform duration-500 ease-out"
           onError={(e) => e.target.src = FALLBACK_SVG_140}
         />
       </div>
 
-      {/* Brand and Actions */}
-      <div className="flex justify-between items-start mb-2">
-        <span className="text-xs font-semibold text-gray-600 uppercase">{product.brand}</span>
-        <div className="flex gap-1">
+      {/* Brand & Action Buttons */}
+      <div className="flex justify-between items-center mb-1.5">
+        <span className="text-[10px] font-bold tracking-wider text-indigo-600 uppercase bg-indigo-50 px-2 py-0.5 rounded-md">{product.brand}</span>
+        <div className="flex items-center gap-1">
           <button
             onClick={handleAddToCart}
             disabled={addingToCart}
-            className="p-1.5 text-gray-400 hover:text-indigo-600 transition-colors"
+            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
             title="Thêm vào giỏ hàng"
           >
-            <BsCart3 size={16} />
+            <BsCart3 size={15} />
           </button>
-          <div className="p-1.5">
-            <FavoriteButton productId={product.id} size={16} />
+          <div className="p-1">
+            <FavoriteButton productId={product.id} size={15} />
           </div>
         </div>
       </div>
 
       {/* Product Name */}
-      <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 text-sm group-hover/card:text-indigo-600">
+      <h3 className="font-semibold text-gray-800 line-clamp-2 mb-2 text-sm group-hover/card:text-indigo-600 transition-colors duration-200 min-h-[40px] leading-snug">
         {product.name}
       </h3>
 
-      {/* Rating Stars */}
-      <div className="flex items-center gap-1 mb-2">
-        <span className="text-yellow-400">★</span>
-        <span className="text-xs font-semibold text-gray-700">
-          {Number(product.average_rating ?? 0).toFixed(1)}
-        </span>
-        <span className="text-xs text-gray-500">
-          ({product.total_ratings || 0})
+      {/* Rating & Sold Info */}
+      <div className="flex items-center justify-between mb-3 text-xs">
+        <div className="flex items-center gap-1 text-amber-500">
+          <span className="text-sm">★</span>
+          <span className="font-bold text-gray-700">
+            {Number(product.average_rating ?? 0).toFixed(1)}
+          </span>
+          <span className="text-gray-400">
+            ({product.total_ratings || 0})
+          </span>
+        </div>
+        <span className="text-gray-500 font-medium bg-gray-100 px-2 py-0.5 rounded-md">
+          {product.sold || product.total_sold ? `${product.sold || product.total_sold} đã bán` : '0 đã bán'}
         </span>
       </div>
 
-      {/* Sold Info */}
-      <p className="text-xs text-gray-500 mb-3">
-        {product.sold || product.total_sold ? `${product.sold || product.total_sold} đã bán` : '0 đã bán'}
-      </p>
-
       {/* Price */}
-      <div className="mt-auto pt-3 border-t border-gray-100">
-        <p className="font-bold text-gray-900 text-sm">
-          {formatPrice(product.price)}
-        </p>
+      <div className="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
+        <div>
+          {hasDiscount ? (
+            <div className="flex flex-col">
+              <span className="text-xs text-gray-400 line-through leading-none mb-1">
+                {formatPrice(product.price)}
+              </span>
+              <span className="font-extrabold text-rose-600 text-base leading-none">
+                {formatPrice(salePrice)}
+              </span>
+            </div>
+          ) : (
+            <span className="font-extrabold text-gray-900 text-base leading-none">
+              {formatPrice(product.price)}
+            </span>
+          )}
+        </div>
       </div>
     </Link>
   );

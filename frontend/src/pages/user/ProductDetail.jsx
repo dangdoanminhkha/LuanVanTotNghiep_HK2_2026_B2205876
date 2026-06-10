@@ -9,6 +9,7 @@ import { BsCart3 } from 'react-icons/bs';
 import ReviewList from '../../components/ReviewList';
 import StarRating from '../../components/StarRating';
 import FavoriteButton from '../../components/FavoriteButton';
+import ProductCard from '../../components/ProductCard';
 
 // SVG fallbacks for different image sizes
 const FALLBACK_SVG_500 = `data:image/svg+xml;utf8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500"><rect fill="%23E5E7EB" width="500" height="500"/><text x="50%" y="50%" font-family="Arial" font-size="20" fill="%239CA3AF" text-anchor="middle" dominant-baseline="middle">No Image</text></svg>')}`;
@@ -268,6 +269,10 @@ const ProductDetail = () => {
     </div>
   );
 
+  const discountVal = product.discount_percentage || product.discount || 0;
+  const hasDiscount = discountVal > 0;
+  const salePrice = hasDiscount ? Math.round(product.price * (1 - discountVal / 100)) : product.price;
+
   // Group variants by color
   const colors = [...new Set(variants.map(v => v.color))];
   const variantsForColor = variants.filter(v => v.color === selectedColor);
@@ -340,54 +345,67 @@ const ProductDetail = () => {
         <div className="mt-10 px-4 sm:px-0 sm:mt-16 lg:mt-0">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-sm font-black text-indigo-600 uppercase tracking-[0.2em] mb-2">{product.brand}</p>
-              <h1 className="text-4xl font-bold text-gray-900 tracking-tight mb-4">{product.name}</h1>
+              <p className="text-[10px] font-extrabold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2.5 py-1 rounded-md mb-2 inline-block">
+                {product.brand}
+              </p>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-3">
+                {product.name}
+              </h1>
             </div>
             <div className="flex gap-2">
-              <FavoriteButton productId={product.id} size={24} />
+              <FavoriteButton productId={product.id} size={22} />
             </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-between">
-            <h2 className="sr-only">Product information</h2>
-            <p className="text-4xl font-black text-gray-900">{formatPrice(product.price)}</p>
-            <div className="flex items-center gap-1">
-              <div className="flex">
-                {[1, 2, 3, 4, 5].map(star => (
-                  <span
-                    key={star}
-                    className={`text-lg ${
-                      star <= Math.round(Number(reviewStats?.average_rating) || 5)
-                        ? 'text-yellow-400'
-                        : 'text-gray-300'
-                    }`}
-                  >
-                    ★
+          <div className="mt-4 flex items-center justify-between border-b border-gray-100 pb-5">
+            <div>
+              {hasDiscount ? (
+                <div className="flex items-baseline gap-2.5">
+                  <span className="text-2xl sm:text-3xl font-extrabold text-rose-600">
+                    {formatPrice(salePrice)}
                   </span>
-                ))}
-              </div>
-              <span className="text-sm text-gray-500 font-bold">({(Number(reviewStats?.average_rating) || 5).toFixed(1)}/5)</span>
+                  <span className="text-sm sm:text-base text-gray-400 line-through">
+                    {formatPrice(product.price)}
+                  </span>
+                  <span className="bg-rose-50 text-rose-600 text-xs font-bold px-2 py-0.5 rounded-md border border-rose-100">
+                    -{discountVal}%
+                  </span>
+                </div>
+              ) : (
+                <span className="text-2xl sm:text-3xl font-extrabold text-gray-900">
+                  {formatPrice(product.price)}
+                </span>
+              )}
             </div>
+            <div className="flex items-center gap-1 bg-amber-50 border border-amber-100/70 px-2.5 py-1 rounded-xl">
+              <span className="text-amber-500 text-sm">★</span>
+              <span className="text-xs font-bold text-gray-700">
+                {(Number(reviewStats?.average_rating) || 5).toFixed(1)}
+              </span>
+              <span className="text-[10px] text-gray-400 font-medium">
+                ({reviewStats?.total_reviews || 0} đánh giá)
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold border ${currentVariant?.stock > 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-200/60' : 'bg-rose-50 text-rose-700 border-rose-200/60'}`}>
+              <span className={`w-2 h-2 rounded-full ${currentVariant?.stock > 0 ? 'bg-emerald-500 animate-pulse-soft' : 'bg-rose-500'}`}></span>
+              {currentVariant?.stock > 0 ? `Còn hàng (ít nhất ${currentVariant.stock} đôi có sẵn)` : 'Tạm hết hàng'}
+            </span>
           </div>
 
           <div className="mt-6">
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-bold text-sm ${currentVariant?.stock > 0 ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
-              <div className={`w-2 h-2 rounded-full ${currentVariant?.stock > 0 ? 'bg-green-600' : 'bg-red-600'}`}></div>
-              {currentVariant?.stock > 0 ? `Còn ${currentVariant.stock} sản phẩm` : 'Hết hàng'}
-            </div>
-          </div>
-
-          <div className="mt-8">
-            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-widest mb-4">Màu sắc: <span className="text-gray-500">{selectedColor}</span></h3>
+            <h3 className="text-xs font-extrabold text-gray-500 uppercase tracking-wider mb-2.5">Màu sắc: <span className="text-gray-950 font-bold ml-1">{selectedColor}</span></h3>
             <div className="flex flex-wrap gap-2">
               {colors.map((color) => (
                 <button
                   key={color}
                   onClick={() => handleColorChange(color)}
-                  className={`px-4 py-2 rounded-lg border-2 transition-all font-medium ${
+                  className={`px-4 py-2 rounded-xl border text-sm font-semibold transition-all duration-200 ${
                     selectedColor === color 
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-600' 
-                      : 'border-gray-200 bg-white text-gray-700 hover:border-indigo-300'
+                      ? 'border-indigo-600 bg-indigo-50/50 text-indigo-600 shadow-sm shadow-indigo-100/50' 
+                      : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
                   }`}
                 >
                   {color}
@@ -396,20 +414,20 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          <div className="mt-8">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-widest">Kích thước</h3>
-              <button className="text-[11px] font-bold text-indigo-600 hover:underline">Hướng dẫn chọn size</button>
+          <div className="mt-6">
+            <div className="flex items-center justify-between mb-2.5">
+              <h3 className="text-xs font-extrabold text-gray-500 uppercase tracking-wider">Kích thước (Size)</h3>
+              <button className="text-xs font-bold text-indigo-600 hover:underline">Hướng dẫn chọn size</button>
             </div>
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
               {sizesForColor.map((size) => (
                 <button
                   key={size}
                   onClick={() => handleSizeChange(size)}
-                  className={`py-3 text-sm font-black rounded-xl border transition-all ${
+                  className={`py-2.5 text-sm font-bold rounded-xl border transition-all duration-200 ${
                     selectedSize === size
-                      ? 'bg-gray-900 text-white border-gray-900 shadow-xl'
-                      : 'bg-white text-gray-900 border-gray-100 hover:border-gray-900'
+                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-100'
+                      : 'bg-white text-gray-800 border-gray-200 hover:border-gray-400'
                   }`}
                 >
                   {size}
@@ -418,11 +436,11 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          <div className="mt-10 flex gap-4">
-            <div className="flex items-center border-2 border-gray-100 rounded-2xl px-4 py-2">
-              <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-2xl font-bold p-2">-</button>
-              <span className="w-12 text-center font-black text-xl">{quantity}</span>
-              <button onClick={() => setQuantity(quantity + 1)} className="text-2xl font-bold p-2">+</button>
+          <div className="mt-8 flex gap-4">
+            <div className="flex items-center border border-gray-200 rounded-xl px-2 py-1 bg-gray-50/50">
+              <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-lg font-bold px-3 py-1 text-gray-500 hover:text-gray-950 transition-colors">-</button>
+              <span className="w-8 text-center font-bold text-base text-gray-800">{quantity}</span>
+              <button onClick={() => setQuantity(quantity + 1)} className="text-lg font-bold px-3 py-1 text-gray-500 hover:text-gray-950 transition-colors">+</button>
             </div>
             <button
               onClick={() => {
@@ -441,7 +459,7 @@ const ProductDetail = () => {
                     color: selectedColor,
                     size: selectedSize,
                     price: product.price,
-                    salePrice: product.discount > 0 ? Math.round(product.price * (1 - product.discount / 100)) : null,
+                    salePrice: hasDiscount ? Math.round(product.price * (1 - discountVal / 100)) : null,
                     image: variantImages[0] || product.image || '',
                     slug: slug,
                     quantity: quantity
@@ -450,12 +468,12 @@ const ProductDetail = () => {
                   setTimeout(() => setAddedToCart(false), 3000);
                 }
               }}
-              className={`flex-1 ${addedToCart ? 'bg-green-600' : 'bg-indigo-600'} text-white px-8 py-5 rounded-[20px] font-black text-lg shadow-xl ${addedToCart ? 'shadow-green-200' : 'shadow-indigo-200'} hover:bg-indigo-700 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 uppercase tracking-widest disabled:bg-gray-400 disabled:shadow-none`}
+              className={`flex-1 ${addedToCart ? 'bg-emerald-600 shadow-emerald-100' : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-100'} text-white px-6 py-4 rounded-xl font-bold text-base shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2.5 uppercase tracking-wider disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none`}
               disabled={!currentVariant || currentVariant.stock <= 0 || !selectedSize}
             >
               {addedToCart ? (
                 <>
-                  <AiOutlineCheckCircle size={24} />
+                  <AiOutlineCheckCircle size={20} />
                   Đã thêm vào giỏ
                 </>
               ) : currentVariant?.stock > 0 ? (
@@ -467,19 +485,19 @@ const ProductDetail = () => {
           </div>
 
           {/* Policy Banners */}
-          <div className="mt-12 grid grid-cols-2 gap-4 border-t border-gray-100 pt-8">
-            <div className="flex items-center gap-4 group">
-              <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-2xl group-hover:bg-indigo-600 group-hover:text-white transition-colors">🛡️</div>
+          <div className="mt-8 grid grid-cols-2 gap-3 border-t border-gray-100 pt-5">
+            <div className="flex items-center gap-3 bg-gray-50/50 p-3 rounded-xl border border-gray-100/50">
+              <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-lg">🛡️</div>
               <div>
-                <h4 className="text-xs font-black uppercase">Bảo hành</h4>
-                <p className="text-[11px] text-gray-500 font-bold">03 tháng tận tâm</p>
+                <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wide">Bảo hành chính hãng</h4>
+                <p className="text-[10px] text-gray-400">03 tháng bảo hành keo, chỉ</p>
               </div>
             </div>
-            <div className="flex items-center gap-4 group">
-              <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-2xl group-hover:bg-green-600 group-hover:text-white transition-colors">🚚</div>
+            <div className="flex items-center gap-3 bg-gray-50/50 p-3 rounded-xl border border-gray-100/50">
+              <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-lg">🚚</div>
               <div>
-                <h4 className="text-xs font-black uppercase">Vận chuyển</h4>
-                <p className="text-[11px] text-gray-500 font-bold">Miễn phí cho mọi đơn hàng</p>
+                <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wide">Giao hàng miễn phí</h4>
+                <p className="text-[10px] text-gray-400">Hỗ trợ ship COD toàn quốc</p>
               </div>
             </div>
           </div>
@@ -718,119 +736,45 @@ const MLProductCarousel = ({ title, subtitle, products, formatPrice, addToCart, 
   };
 
   return (
-    <div className="mt-20 border-t border-gray-100 pt-16">
-      <div className="mb-8">
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">{title}</h3>
-        {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+    <div className="mt-16 border-t border-gray-100 pt-12">
+      <div className="mb-6">
+        <h3 className="text-xl md:text-2xl font-extrabold text-gray-800 tracking-tight">{title}</h3>
+        {subtitle && <p className="text-sm text-gray-400 mt-1">{subtitle}</p>}
       </div>
 
       <div className="relative group">
         <button
           onClick={() => setStartIdx(Math.max(0, startIdx - 1))}
           disabled={startIdx === 0}
-          className="absolute left-0 z-10 -ml-6 top-1/2 -translate-y-1/2 bg-white shadow-md hover:shadow-lg w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center disabled:opacity-0 transition-all"
+          className="absolute left-0 z-10 -ml-5 top-1/2 -translate-y-1/2 bg-white shadow-xl hover:bg-indigo-600 hover:text-white text-gray-600 w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center disabled:opacity-0 transition-all duration-300"
         >
-          <span className="text-lg font-bold text-gray-600">‹</span>
+          <span className="text-lg font-bold">‹</span>
         </button>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {products.slice(startIdx, startIdx + itemsPerView).map((p, idx) => (
-            <Link
-              key={p.id}
-              to={`/products/${createProductSlug(p)}`}
-              className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-lg transition flex flex-col group/card relative"
-            >
-              {/* Badges */}
-              <div className="absolute top-3 left-3 flex gap-2 z-10">
-                {isNewProduct(p.created_at) && (
-                  <div className="bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full">
-                    Mới
-                  </div>
-                )}
-                {isBestselling(p.id) && (
-                  <div className="bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded-full">
-                    Bán chạy
-                  </div>
-                )}
-              </div>
-
-              {/* Discount Badge */}
-              {p.discount > 0 && (
-                <div className="absolute top-3 right-3 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full z-10">
-                  -{p.discount}%
-                </div>
-              )}
-
-              {/* Image */}
-              <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-gray-100">
-                {p.image ? (
-                  <img
-                    src={normalizeImageUrl(p.image)}
-                    alt={p.name}
-                    className="w-full h-full object-contain group-hover/card:scale-105 transition-transform duration-300"
-                    onError={(e) => e.target.src = FALLBACK_SVG_140}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-5xl text-gray-300">👟</div>
-                )}
-              </div>
-
-              {/* Brand and Actions */}
-              <div className="flex justify-between items-start mb-2">
-                <span className="text-xs font-semibold text-gray-600 uppercase">{p.brand}</span>
-                <div className="flex gap-1">
-                  {addToCart && (
-                    <button
-                      onClick={(e) => handleAddToCart(p, e)}
-                      className="p-1.5 text-gray-400 hover:text-indigo-600 transition-colors"
-                      title="Thêm vào giỏ hàng"
-                    >
-                      <BsCart3 size={16} />
-                    </button>
-                  )}
-                  <div className="p-1.5">
-                    <FavoriteButton productId={p.id} size={16} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Product Name */}
-              <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 text-sm group-hover/card:text-indigo-600">
-                {p.name}
-              </h3>
-
-              {/* Rating Stars */}
-              <div className="flex items-center gap-1 mb-2">
-                <span className="text-yellow-400">★</span>
-                <span className="text-xs font-semibold text-gray-700">
-                  {Number(p.average_rating ?? 0).toFixed(1)}
-                </span>
-                <span className="text-xs text-gray-500">
-                  ({p.total_ratings || 0})
-                </span>
-              </div>
-
-              {/* Sold Info */}
-              <p className="text-xs text-gray-500 mb-3">
-                {p.sold ? `${p.sold} đã bán` : 'Chưa có đánh giá'}
-              </p>
-
-              {/* Price */}
-              <div className="mt-auto pt-3 border-t border-gray-100">
-                <p className="font-bold text-gray-900 text-sm">
-                  {formatPrice(p.price)}
-                </p>
-              </div>
-            </Link>
-          ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          {products.slice(startIdx, startIdx + itemsPerView).map((p) => {
+            const normalizedProduct = {
+              ...p,
+              discount_percentage: p.discount_percentage || p.discount || 0,
+              total_sold: p.total_sold || p.sold || 0
+            };
+            return (
+              <ProductCard
+                key={p.id}
+                product={normalizedProduct}
+                isNew={isNewProduct(p.created_at)}
+                isBestselling={isBestselling(p.id)}
+              />
+            );
+          })}
         </div>
 
         <button
           onClick={() => setStartIdx(Math.min(products.length - itemsPerView, startIdx + 1))}
           disabled={startIdx >= products.length - itemsPerView}
-          className="absolute right-0 z-10 -mr-6 top-1/2 -translate-y-1/2 bg-white shadow-md hover:shadow-lg w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center disabled:opacity-0 transition-all"
+          className="absolute right-0 z-10 -mr-5 top-1/2 -translate-y-1/2 bg-white shadow-xl hover:bg-indigo-600 hover:text-white text-gray-600 w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center disabled:opacity-0 transition-all duration-300"
         >
-          <span className="text-lg font-bold text-gray-600">›</span>
+          <span className="text-lg font-bold">›</span>
         </button>
       </div>
     </div>
